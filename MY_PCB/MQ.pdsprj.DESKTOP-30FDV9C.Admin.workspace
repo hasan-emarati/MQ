@@ -1,0 +1,44 @@
+<?xml version='1.0' encoding='UTF-8' standalone='yes'?>
+<WORKSPACE>
+ <FRAME activewindow="0">
+  <PLACEMENT>2c00000002000000030000000083ffff0083ffffffffffffffffffffb20000000c000000ce060000fa030000</PLACEMENT>
+  <WINDOW type="default" module="ISIS">
+   <editor metric="0" gridmajor="2540000" mode="00000010" zoom="0" scale="108" flipped="0" gridminor="254000" gridmode="32" snapidx="1" snap="127000" xcursor="16" orgmode="0" snaprange="117592">
+    <world y1="-12700000" x1="-19050000" y2="12700000" x2="19050000"/>
+    <centre x="-2794000" y="-500160"/>
+    <origin x="0" y="0"/>
+   </editor>
+  </WINDOW>
+  <WINDOW type="default" module="ARES">
+   <editor metric="1" gridmajor="1000000" mode="00000000" zoom="-1" scale="255" flipped="0" gridminor="200000" gridmode="32" snapidx="1" snap="10000" xcursor="0" orgmode="0" snaprange="49803">
+    <world y1="-12700000" x1="-15240000" y2="12700000" x2="15240000"/>
+    <centre x="1860000" y="6080000"/>
+    <origin x="0" y="0"/>
+   </editor>
+  </WINDOW>
+  <WINDOW type="VIEW3D" module="VIEW3D">
+   <camera>
+    <position x="186087" y="6616118" z="9730134"/>
+    <focus x="314128" y="6299638" z="521340"/>
+    <up x="23515" y="999146" z="-34011"/>
+   </camera>
+  </WINDOW>
+ </FRAME>
+ <MODULE name="ARES">
+  <editor metric="1" gridmajor="1000000" mode="00000000" zoom="-1" scale="255" flipped="0" gridminor="200000" gridmode="32" snapidx="1" snap="10000" xcursor="0" orgmode="0" snaprange="49803">
+   <world y1="-12700000" x1="-15240000" y2="12700000" x2="15240000"/>
+   <centre x="1860000" y="6080000"/>
+   <origin x="0" y="0"/>
+  </editor>
+ </MODULE>
+ <MODULE name="ISIS">
+  <editor metric="0" gridmajor="2540000" mode="00000010" zoom="0" scale="108" flipped="0" gridminor="254000" gridmode="32" snapidx="1" snap="127000" xcursor="16" orgmode="0" snaprange="117592">
+   <world y1="-12700000" x1="-19050000" y2="12700000" x2="19050000"/>
+   <centre x="-2794000" y="-500160"/>
+   <origin x="0" y="0"/>
+  </editor>
+ </MODULE>
+ <MODULE name="VSMDEBUG">
+  <PWI/>
+ </MODULE>
+</WORKSPACE>

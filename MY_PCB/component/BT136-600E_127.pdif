@@ -1,0 +1,222 @@
+;Proteus Design Interchange Format
+
+(PDIF
+  (vendor "Labcenter Electronics")
+  (version 1 0)
+  (library
+    (part "BT136600E127"
+      (family "DIO")
+      (package "TO254P1040X475X19353")
+      (description "TRIAC_Logic_-_Sensitive_Gate_600V_4A_Through_Hole_TO-220AB")
+      (attribute "PKG_TYPE" "TO254P1040X475X19353")
+      (attribute "MF" "NXP_Semiconductors")
+      (attribute "MAXIMUM_PACKAGE_HEIGHT" "19.35_mm")
+      (attribute "PACKAGE" "TO-220-3_NXP_Semiconductors")
+      (attribute "PRICE" "None")
+      (attribute "CHECK_PRICES" "https://www.snapeda.com/parts/BT136-600E,127/NXP+Semiconductors/view-part/?ref=eda")
+      (attribute "STANDARD" "IPC_7351B")
+      (attribute "PARTREV" "02")
+      (attribute "SNAPEDA_LINK" "https://www.snapeda.com/parts/BT136-600E,127/NXP+Semiconductors/view-part/?ref=snap")
+      (attribute "MP" "BT136-600E,127")
+      (attribute "AVAILABILITY" "In_Stock")
+      (attribute "MANUFACTURER" "WeEn_Semiconductors")
+      (gate
+        (swap 1)
+        (symbol "BT136600E127")
+        (pin "G" 3 (type PS))
+        (pin "T1" 1 (type PS))
+        (pin "T2" 2 (type PS))
+      )
+    )
+    (symbol "BT136600E127"
+      (units THOU)
+      (graphic
+        (stroke 10.0)
+        (path (pt -100.0 110.0) (pt -40.0 20.0))
+      )
+      (graphic
+        (stroke 10.0)
+        (path (pt -40.0 20.0) (pt 10.0 110.0))
+      )
+      (graphic
+        (stroke 10.0)
+        (path (pt 10.0 110.0) (pt -100.0 110.0))
+      )
+      (graphic
+        (stroke 10.0)
+        (path (pt 40.0 110.0) (pt 10.0 110.0))
+      )
+      (graphic
+        (stroke 10.0)
+        (path (pt -10.0 20.0) (pt 40.0 110.0))
+      )
+      (graphic
+        (stroke 10.0)
+        (path (pt 40.0 110.0) (pt 100.0 20.0))
+      )
+      (graphic
+        (stroke 10.0)
+        (path (pt 100.0 20.0) (pt 0.0 20.0))
+      )
+      (graphic
+        (stroke 10.0)
+        (path (pt 0.0 20.0) (pt -10.0 20.0))
+      )
+      (graphic
+        (stroke 10.0)
+        (path (pt 40.0 110.0) (pt 100.0 110.0))
+      )
+      (graphic
+        (stroke 6.0)
+        (path (pt -75.0 20.0) (pt -100.0 0.0))
+      )
+      (graphic
+        (stroke 10.0)
+        (path (pt -40.0 20.0) (pt -75.0 20.0))
+      )
+      (graphic
+        (stroke 10.0)
+        (path (pt -75.0 20.0) (pt -100.0 20.0))
+      )
+      (graphic
+        (stroke 10.0)
+        (path (pt -40.0 20.0) (pt -10.0 20.0))
+      )
+      (graphic
+        (stroke 6.0)
+        (path (pt 0.0 0.0) (pt 0.0 20.0))
+      )
+      (terminal
+        (body (symbol "PIN_R0_U_L100") (pt -200.0 0.0) (rot 0) (mir 0) (visible true))
+        (name (pt 139.37 0.0) (rot 0) (just MIDDLE LEFT) (visible false))
+        (number (pt -39.37 0.0) (rot 0) (just MIDDLE LEFT) (visible false))
+      )
+      (terminal
+        (body (symbol "PIN_R90_U_L100") (pt 0.0 -100.0) (rot 0) (mir 0) (visible true))
+        (name (pt 0.0 139.37) (rot 0) (just MIDDLE LEFT) (visible false))
+        (number (pt -39.37 0.0) (rot 0) (just MIDDLE LEFT) (visible false))
+      )
+      (terminal
+        (body (symbol "PIN_R270_U_L100") (pt 0.0 200.0) (rot 0) (mir 0) (visible true))
+        (name (pt -0.0 -139.37) (rot 0) (just MIDDLE RIGHT) (visible false))
+        (number (pt -39.37 0.0) (rot 0) (just MIDDLE RIGHT) (visible false))
+      )
+    )
+    (symbol "PIN_R0_U_L100"
+      (units THOU)
+      (graphic
+        (stroke 6.5)
+        (path (pt 0.0 0.0) (pt 100.0 0.0))
+      )
+    )
+    (symbol "PIN_R90_U_L100"
+      (units THOU)
+      (graphic
+        (stroke 6.5)
+        (path (pt 0.0 0.0) (pt 0.0 100.0))
+      )
+    )
+    (symbol "PIN_R270_U_L100"
+      (units THOU)
+      (graphic
+        (stroke 6.5)
+        (path (pt 0.0 0.0) (pt -0.0 -100.0))
+      )
+    )
+    (package "TO254P1040X475X19353"
+      (units THOU)
+      (layer TSLK
+        (graphic
+          (stroke 5.0)
+          (path (pt -204.72 -75.08) (pt -204.72 111.93))
+        )
+        (graphic
+          (stroke 5.0)
+          (path (pt -204.72 111.93) (pt 204.72 111.93))
+        )
+        (graphic
+          (stroke 5.0)
+          (path (pt 204.72 111.93) (pt 204.72 -75.08))
+        )
+        (graphic
+          (stroke 5.0)
+          (path (pt 204.72 -75.08) (pt -204.72 -75.08))
+        )
+        (graphic
+          (stroke 7.87)
+          (circle (pt -103.94 -99.09) (pt -96.06 -99.09))
+        )
+      )
+      (layer TASM
+        (graphic
+          (stroke 5.0)
+          (path (pt -204.72 -75.08) (pt -204.72 111.93))
+        )
+        (graphic
+          (stroke 5.0)
+          (path (pt -204.72 111.93) (pt 204.72 111.93))
+        )
+        (graphic
+          (stroke 5.0)
+          (path (pt 204.72 111.93) (pt 204.72 -75.08))
+        )
+        (graphic
+          (stroke 5.0)
+          (path (pt 204.72 -75.08) (pt -204.72 -75.08))
+        )
+        (graphic
+          (stroke 7.87)
+          (circle (pt -103.94 -99.09) (pt -96.06 -99.09))
+        )
+      )
+      (layer OCCA
+        (graphic
+          (stroke 1.97)
+          (path (pt -214.57 -84.92) (pt -214.57 121.77))
+        )
+        (graphic
+          (stroke 1.97)
+          (path (pt -214.57 121.77) (pt 214.57 121.77))
+        )
+        (graphic
+          (stroke 1.97)
+          (path (pt 214.57 121.77) (pt 214.57 -84.92))
+        )
+        (graphic
+          (stroke 1.97)
+          (path (pt 214.57 -84.92) (pt -214.57 -84.92))
+        )
+      )
+      (leg 3 (pt 100 0) (padstack 1))
+      (leg 1 (pt -100 0) (padstack 2))
+      (leg 2 (pt 0 0) (padstack 3))
+      (padstack 1
+        (hole 52)
+        (plated true)
+        (pad (layer TCOP) (round 78.54))
+        (pad (layer INNER) (round 78.54))
+        (pad (layer BCOP) (round 78.54))
+        (pad (layer TRES) (round 82.48))
+        (pad (layer BRES) (round 82.48))
+      )
+      (padstack 2
+        (hole 52)
+        (plated true)
+        (pad (layer TCOP) (square 78.54))
+        (pad (layer INNER) (square 78.54))
+        (pad (layer BCOP) (square 78.54))
+        (pad (layer TRES) (square 82.48))
+        (pad (layer BRES) (square 82.48))
+      )
+      (padstack 3
+        (hole 52)
+        (plated true)
+        (pad (layer TCOP) (round 78.54))
+        (pad (layer INNER) (round 78.54))
+        (pad (layer BCOP) (round 78.54))
+        (pad (layer TRES) (round 82.48))
+        (pad (layer BRES) (round 82.48))
+      )
+    )
+  )
+)

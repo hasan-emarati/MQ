@@ -1,0 +1,171 @@
+;Proteus Design Interchange Format
+
+(PDIF
+  (vendor "Labcenter Electronics")
+  (version 1 0)
+  (library
+    (part "4527"
+      (family "FUS")
+      (package "FUSE_4527")
+      (description "5mm_Low_Profile_Holder")
+      (attribute "PKG_TYPE" "FUSE_4527")
+      (attribute "MF" "Keystone")
+      (attribute "MAXIMUM_PACKAGE_HEIGHT" "10.8mm")
+      (attribute "PACKAGE" "None")
+      (attribute "PRICE" "None")
+      (attribute "CHECK_PRICES" "https://www.snapeda.com/parts/4527/Keystone/view-part/?ref=eda")
+      (attribute "STANDARD" "Manufacturer_Recommendations")
+      (attribute "PARTREV" "B")
+      (attribute "SNAPEDA_LINK" "https://www.snapeda.com/parts/4527/Keystone/view-part/?ref=snap")
+      (attribute "MP" "4527")
+      (attribute "PURCHASE-URL" "https://www.snapeda.com/api/url_track_click_mouser/?unipart_id=475964&manufacturer=Keystone&part_nam")
+      (attribute "MANUFACTURER" "Keystone")
+      (attribute "AVAILABILITY" "In_Stock")
+      (attribute "SNAPEDA_PN" "4527")
+      (gate
+        (swap 1)
+        (symbol "4527")
+        (pin "1" 1 (type PS))
+        (pin "2" 2 (type PS))
+      )
+    )
+    (symbol "4527"
+      (units THOU)
+      (graphic
+        (stroke 6.0)
+        (path
+          (arc (pt -150 0) (pt -150 -75) (pt 0 75) (start -180) (sweep 180))
+          (pt 0 0)
+        )
+      )
+      (graphic
+        (stroke 6.0)
+        (path
+          (arc (pt 0 0) (pt 0 -75) (pt 150 75) (start 180) (sweep 180))
+          (pt 150 0)
+        )
+      )
+      (graphic
+        (stroke 6.0)
+        (path (pt 200.0 0.0) (pt 150.0 0.0))
+      )
+      (graphic
+        (stroke 6.0)
+        (path (pt -200.0 0.0) (pt -150.0 0.0))
+      )
+      (terminal
+        (body (symbol "PIN_R0_U_L100") (pt -300.0 0.0) (rot 0) (mir 0) (visible true))
+        (name (pt 139.37 0.0) (rot 0) (just MIDDLE LEFT) (visible false))
+        (number (pt -39.37 0.0) (rot 0) (just MIDDLE LEFT) (visible true))
+      )
+      (terminal
+        (body (symbol "PIN_R180_U_L100") (pt 300.0 0.0) (rot 0) (mir 0) (visible true))
+        (name (pt -139.37 0.0) (rot 0) (just MIDDLE RIGHT) (visible false))
+        (number (pt -39.37 0.0) (rot 0) (just MIDDLE RIGHT) (visible true))
+      )
+    )
+    (symbol "PIN_R0_U_L100"
+      (units THOU)
+      (graphic
+        (stroke 6.5)
+        (path (pt 0.0 0.0) (pt 100.0 0.0))
+      )
+    )
+    (symbol "PIN_R180_U_L100"
+      (units THOU)
+      (graphic
+        (stroke 6.5)
+        (path (pt 0.0 0.0) (pt -100.0 0.0))
+      )
+    )
+    (package "FUSE_4527"
+      (units THOU)
+      (layer TSLK
+        (graphic
+          (stroke 5.0)
+          (path (pt -475.59 190.94) (pt 475.59 190.94))
+        )
+        (graphic
+          (stroke 5.0)
+          (path (pt -475.59 -190.94) (pt 475.59 -190.94))
+        )
+        (graphic
+          (stroke 5.0)
+          (path (pt -475.59 190.94) (pt -475.59 51.97))
+        )
+        (graphic
+          (stroke 5.0)
+          (path (pt -475.59 -190.94) (pt -475.59 -51.97))
+        )
+        (graphic
+          (stroke 5.0)
+          (path (pt 475.59 190.94) (pt 475.59 51.97))
+        )
+        (graphic
+          (stroke 5.0)
+          (path (pt 475.59 -190.94) (pt 475.59 -51.97))
+        )
+      )
+      (layer TASM
+        (graphic
+          (stroke 5.0)
+          (path (pt -475.59 -190.94) (pt -475.59 190.94))
+        )
+        (graphic
+          (stroke 5.0)
+          (path (pt -475.59 190.94) (pt 475.59 190.94))
+        )
+        (graphic
+          (stroke 5.0)
+          (path (pt 475.59 190.94) (pt 475.59 -190.94))
+        )
+        (graphic
+          (stroke 5.0)
+          (path (pt 475.59 -190.94) (pt -475.59 -190.94))
+        )
+      )
+      (layer OCCA
+        (graphic
+          (stroke 1.97)
+          (path (pt -485.43 -200.79) (pt -485.43 200.79))
+        )
+        (graphic
+          (stroke 1.97)
+          (path (pt -485.43 200.79) (pt 485.43 200.79))
+        )
+        (graphic
+          (stroke 1.97)
+          (path (pt 485.43 200.79) (pt 485.43 -200.79))
+        )
+        (graphic
+          (stroke 1.97)
+          (path (pt 485.43 -200.79) (pt -485.43 -200.79))
+        )
+      )
+      (leg 1 (pt -429.92 0) (padstack 1))
+      (leg 2 (pt 429.92 0) (padstack 2))
+      (padstack 1
+        (hole 59)
+        (plated true)
+        (pad (layer TCOP) (round 88.58))
+        (pad (layer INNER) (round 88.58))
+        (pad (layer BCOP) (round 88.58))
+        (pad (layer TRES) (round 92.52))
+        (pad (layer BRES) (round 92.52))
+      )
+      (padstack 2
+        (hole 59)
+        (plated true)
+        (pad (layer TCOP) (round 88.58))
+        (pad (layer INNER) (round 88.58))
+        (pad (layer BCOP) (round 88.58))
+        (pad (layer TRES) (round 92.52))
+        (pad (layer BRES) (round 92.52))
+      )
+      (model 4527.step
+        (euler 0 0 0)
+        (offset 0 0 0)
+      )
+    )
+  )
+)
