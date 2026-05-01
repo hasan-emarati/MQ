@@ -1,0 +1,93 @@
+CAMtastic! DRC Settings
+VERSION: 1
+***********************
+Description= Min. Annular Ring (Drill->Pad)
+Size= 5.0
+Check= 1
+Fix= 1
+
+Description= Min. Annular Ring (Drill->Mask)
+Size= 5.0
+Check= 1
+Fix= 1
+
+Description= Min. Annular Ring (Pad->Mask
+Size= 5.0
+Check= 1
+Fix= 1
+
+Description= Min. Clearance (Pad->Pad)
+Size= 5.0
+Check= 1
+Fix= 1
+
+Description= Min. Clearance (Pad->Trace)
+Size= 5.0
+Check= 1
+Fix= 1
+
+Description= Min. Clearance (Trace->Trace)
+Size= 5.0
+Check= 1
+Fix= 1
+
+Description= Min. Pad Diameter
+Size= 5.0
+Check= 1
+Fix= 1
+
+Description= Min. Trace Width
+Size= 5.0
+Check= 1
+Fix= 1
+
+Description= Solder Bridging
+Size= 5.0
+Check= 1
+Fix= 1
+
+Description= Part->Part Spacing
+Size= 10.0
+Check= 1
+Fix= 1
+
+Description= Power/Ground Shorts
+Size= 10.0
+Check= 1
+Fix= 1
+
+Description= Non-Functional Pads
+Size= 10.0
+Check= 1
+Fix= 0
+
+Description= Silkscreen Over Mask
+Size= 5.0
+Check= 1
+Fix= 1
+
+Description= Drill: Double Hits
+Size= 5.0
+Check= 1
+Fix= 1
+
+Description= Drill: Touching Holes
+Size= 5.0
+Check= 1
+Fix= 1
+
+Description= Starved Thermals
+Size= 4
+Check= 1
+Fix= 1
+
+Description= Net Shorts
+Size= 4.0
+Check= 1
+Fix= 1
+
+Description= Net Antennas
+Size= 4.0
+Check= 1
+Fix= 1
+

@@ -1,0 +1,94 @@
+LABCENTER PROTEUS TOOL INFORMATION FILE
+=======================================
+
+In case of difficulty, please e-mail support@labcenter.co.uk
+
+Tool set up for Proteus layout 'MQ.pdsprj'.
+CADCAM generated at 19:10:12 on 27 January 2026.
+
+File List
+---------
+Bottom Copper           : MQ - CADCAM Bottom Copper.GBR
+Top Silk Screen         : MQ - CADCAM Top Silk Screen.GBR
+Bottom Silk Screen      : MQ - CADCAM Bottom Silk Screen.GBR
+Top Solder Resist       : MQ - CADCAM Top Solder Resist.GBR
+Bottom Solder Resist    : MQ - CADCAM Bottom Solder Resist.GBR
+Profile                 : MQ - CADCAM Profile.GBR
+Drill                   : MQ - CADCAM Drill.DRL
+Netlist                 : MQ - CADCAM Netlist.IPC
+
+Photoplotter Setup
+------------------
+Format: RS274X, ASCII, 4.3, metric, absolute, eob=*, LZO
+Bounds: 1.65mm 1.45mm 128.85mm 73.95mm
+Notes:  D=Diameter, S=Side, W=Width, H=Height, C=Chamfer, I=Index
+
+D10	CIRCLE  D=0.762mm                                                         DRAW 
+D11	CIRCLE  D=1.524mm                                                         DRAW 
+D12	CIRCLE  D=0.381mm                                                         DRAW 
+D13	CIRCLE  D=1.016mm                                                         DRAW 
+D14	CIRCLE  D=0.635mm                                                         DRAW 
+D15	CIRCLE  D=1.27mm                                                          FLASH
+D16	CIRCLE  D=1.524mm                                                         FLASH
+D17	CIRCLE  D=0.762mm                                                         FLASH
+D18	CIRCLE  D=1.016mm                                                         FLASH
+D19	CIRCLE  D=0.254mm                                                         DRAW 
+D70	CIRCLE  D=3.048mm                                                         FLASH
+D71	CIRCLE  D=2.54mm                                                          FLASH
+D20	CIRCLE  D=1.422mm                                                         FLASH
+D21	CIRCLE  D=2.286mm                                                         FLASH
+D22	CIRCLE  D=1.778mm                                                         FLASH
+D23	SQUARE  S=2.032mm                                                         FLASH
+D24	SQUARE  S=1.12mm                                                          FLASH
+D25	CIRCLE  D=0.254mm                                                         FLASH
+D26	CIRCLE  D=1.12mm                                                          FLASH
+D27	DIL     W=1.524mm             H=2.54mm              C=0.305mm             FLASH
+D28	SQUARE  S=1.778mm                                                         FLASH
+D29	DIL     W=2.54mm              H=1.524mm             C=0.305mm             FLASH
+D72	CIRCLE  D=2.032mm                                                         FLASH
+D73	PPAD    W=1.365mm             H=1.365mm             I=0                   FLASH
+D30	PPAD    W=1.352mm             H=1.352mm             I=1                   FLASH
+D31	RECT    W=1.803mm             H=2.261mm                                   FLASH
+D32	PPAD    W=1.365mm             H=1.365mm             I=2                   FLASH
+D33	CIRCLE  D=0.102mm                                                         DRAW 
+D34	CIRCLE  D=0.127mm                                                         DRAW 
+D35	CIRCLE  D=0.12mm                                                          DRAW 
+D36	CIRCLE  D=0.2mm                                                           DRAW 
+D37	CIRCLE  D=3.302mm                                                         FLASH
+D38	CIRCLE  D=2.794mm                                                         FLASH
+D39	CIRCLE  D=1.676mm                                                         FLASH
+D40	PPAD    W=2.286mm             H=2.286mm             I=3                   FLASH
+D41	PPAD    W=1.12mm              H=1.12mm              I=4                   FLASH
+D42	PPAD    W=1.778mm             H=2.794mm             I=5                   FLASH
+D43	PPAD    W=2.032mm             H=2.032mm             I=6                   FLASH
+D44	PPAD    W=2.794mm             H=1.778mm             I=7                   FLASH
+D45	PPAD    W=1.365mm             H=1.365mm             I=8                   FLASH
+D46	PPAD    W=1.803mm             H=2.261mm             I=9                   FLASH
+D47	PPAD    W=1.365mm             H=1.365mm             I=10                  FLASH
+D48	CIRCLE  D=0.064mm                                                         DRAW 
+
+NC Drill Setup
+--------------
+Format: Excellon, ASCII, 4.3, metric, absolute, eob=<CR><LF>, no zero suppression.
+Notes:  Tool sizes are diameters. Layer sets are in brackets - 0=TOP, 15=BOTTOM, 1-14=INNER.
+
+T01	0.508mm (0-15) Plated
+T02	0.381mm (0-15) Plated
+T03	1.524mm (0-15) Plated
+T04	1.143mm (0-15) Plated
+T05	0.813mm (0-15) Plated
+T06	1.016mm (0-15) Plated
+T07	0.762mm (0-15) Plated
+T08	0.75mm (0-15) Plated
+T09	0.635mm (0-15) Plated
+
+Layer Stackup
+-------------
+Top Solder Resist        : 0.01mm     Resist
+Top Copper               : 0.018mm    Copper
+Core                     : 1.55mm     FR4
+Bottom Copper            : 0.018mm    Copper
+Bottom Solder Resist     : 0.01mm     Resist
+
+
+[END OF FILE]
