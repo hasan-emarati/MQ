@@ -1,4 +1,4 @@
-#include "gpio.h"
+#include "gpio_s3.h"
 
 void GPIO_Init(uint8_t port, uint8_t pin, GPIO_Mode mode, GPIO_Speed speed)
 {

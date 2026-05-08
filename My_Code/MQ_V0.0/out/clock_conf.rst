@@ -49,23 +49,23 @@
                                      49 ;	-----------------------------------------
                                      50 ;	 function clock_init
                                      51 ;	-----------------------------------------
-      0080F8                         52 _clock_init:
+      0083B5                         52 _clock_init:
                                      53 ;	lib/clock_conf.c: 6: CLK_ECKR |= CLK_ECKR_HSEEN;
-      0080F8 72 10 50 C1      [ 1]   54 	bset	0x50c1, #0
+      0083B5 72 10 50 C1      [ 1]   54 	bset	0x50c1, #0
                                      55 ;	lib/clock_conf.c: 7: while(!(CLK_ECKR & CLK_ECKR_HSERDY));
-      0080FC                         56 00101$:
-      0080FC 72 03 50 C1 FB   [ 2]   57 	btjf	0x50c1, #1, 00101$
+      0083B9                         56 00101$:
+      0083B9 72 03 50 C1 FB   [ 2]   57 	btjf	0x50c1, #1, 00101$
                                      58 ;	lib/clock_conf.c: 9: CLK_SWR = CLK_SWR_HSE;
-      008101 35 B4 50 C4      [ 1]   59 	mov	0x50c4+0, #0xb4
+      0083BE 35 B4 50 C4      [ 1]   59 	mov	0x50c4+0, #0xb4
                                      60 ;	lib/clock_conf.c: 10: CLK_SWCR |= CLK_SWCR_SWEN;
-      008105 72 12 50 C5      [ 1]   61 	bset	0x50c5, #1
+      0083C2 72 12 50 C5      [ 1]   61 	bset	0x50c5, #1
                                      62 ;	lib/clock_conf.c: 11: while(CLK_SWCR & CLK_SWCR_SWBSY);
-      008109                         63 00104$:
-      008109 72 00 50 C5 FB   [ 2]   64 	btjt	0x50c5, #0, 00104$
+      0083C6                         63 00104$:
+      0083C6 72 00 50 C5 FB   [ 2]   64 	btjt	0x50c5, #0, 00104$
                                      65 ;	lib/clock_conf.c: 13: CLK_CKDIVR = 0x00;
-      00810E 35 00 50 C6      [ 1]   66 	mov	0x50c6+0, #0x00
+      0083CB 35 00 50 C6      [ 1]   66 	mov	0x50c6+0, #0x00
                                      67 ;	lib/clock_conf.c: 14: }
-      008112 81               [ 4]   68 	ret
+      0083CF 81               [ 4]   68 	ret
                                      69 	.area CODE
                                      70 	.area CONST
                                      71 	.area INITIALIZER

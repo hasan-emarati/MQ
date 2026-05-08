@@ -8,7 +8,9 @@
 out/main.rel
 out/clock_conf.rel
 out/delay.rel
-out/gpio.rel
+out/gpio_s3.rel
+out/i2c.rel
+out/oled.rel
 out/uart.rel
 
 -e

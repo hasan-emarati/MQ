@@ -1,0 +1,70 @@
+// STM8S003f3
+#include "stm8.h"
+#include "gpio.h"
+#include "delay.h"
+#include "uart.h"
+//#include "clock_conf.h"
+
+#define LED_PORT     GPIO_PORT_PD
+#define LED_PIN      PIN4
+
+#define RELAY_PORT   GPIO_PORT_PC
+#define RELAY_PIN    PIN3
+
+#define TR_PORT      GPIO_PORT_PA
+#define TR_PIN       PIN3
+
+#define INPUT1_PORT  GPIO_PORT_PC
+#define INPUT1_PIN   PIN5
+
+#define INPUT2_PORT  GPIO_PORT_PC
+#define INPUT2_PIN   PIN6
+
+int main(void)
+{
+    // Configure HSE clock
+    CLK_ECKR |= CLK_ECKR_HSEEN;
+    while(!(CLK_ECKR & CLK_ECKR_HSERDY));
+    CLK_SWR = CLK_SWR_HSE;
+    CLK_SWCR |= CLK_SWCR_SWEN;
+    while(CLK_SWCR & CLK_SWCR_SWBSY);
+    CLK_CKDIVR = 0x00; // 16MHz system clock
+
+    // Initialize UART
+    uart_init(9600);  
+    
+    // Initialize GPIO pins
+    GPIO_Init(LED_PORT, LED_PIN, GPIO_MODE_OUTPUT_PUSH_PULL_LOW, GPIO_SPEED_SLOW);
+    GPIO_Init(RELAY_PORT, RELAY_PIN, GPIO_MODE_OUTPUT_PUSH_PULL_LOW, GPIO_SPEED_SLOW);
+    GPIO_Init(TR_PORT, TR_PIN, GPIO_MODE_OUTPUT_PUSH_PULL_LOW, GPIO_SPEED_SLOW);
+    GPIO_Init(INPUT1_PORT, INPUT1_PIN, GPIO_MODE_INPUT_PULL_UP, GPIO_SPEED_SLOW);
+    GPIO_Init(INPUT2_PORT, INPUT2_PIN, GPIO_MODE_INPUT_PULL_UP, GPIO_SPEED_SLOW);
+    
+    // Initial startup message
+    uart_write("System Ready!\r\n");
+    
+    //ssd1306 (system ready)
+    
+    while(1) 
+    {
+        // Check for received character
+        char received = uart_read();
+        
+        if(received == '1') {
+            uart_write("Received number 1!\r\n");
+            // Blink LED as visual feedback
+            GPIO_WriteLow(LED_PORT, LED_PIN);
+            delay_ms(500);  // Using delay from delay.h
+            GPIO_WriteHigh(LED_PORT, LED_PIN);
+        }
+        
+        // Main task: monitor INPUT1 pin state to control LED
+        if(GPIO_Read(INPUT1_PORT, INPUT1_PIN) == 1) {
+            GPIO_WriteLow(LED_PORT, LED_PIN); // LED ON
+        } else {
+            GPIO_WriteHigh(LED_PORT, LED_PIN); // LED OFF
+        }
+        
+        delay(10000);  // Using delay from delay.h
+    }
+}

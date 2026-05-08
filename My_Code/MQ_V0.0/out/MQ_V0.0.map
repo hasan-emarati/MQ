@@ -7,38 +7,38 @@ Area                                    Addr        Size        Decimal Bytes (A
 
       Value  Global                              Global Defined In Module
       -----  --------------------------------   ------------------------
-     00000000  .__.ABS.                           strlen
+     00000000  .__.ABS.                           
      00000000  l_CABS                          
      00000000  l_DABS                          
-     00000000  l_DATA                          
-     00000000  l_INITIALIZED                   
-     00000000  l_INITIALIZER                   
      00000000  l__CODE                         
      00000000  s_CABS                          
      00000000  s_DABS                          
      00000000  s__CODE                         
      00000001  l_SSEG                          
      00000001  s_DATA                          
-     00000001  s_INITIALIZED                   
-     00000001  s_SSEG                          
      00000003  l_GSFINAL                       
+     00000003  l_INITIALIZED                   
+     00000003  l_INITIALIZER                   
      00000007  l_HOME                          
      00000023  l_GSINIT                        
-     00000025  l_CONST                         
-     0000050B  l_CODE                          
+     00000200  l_DATA                          
+     00000201  s_INITIALIZED                   
+     00000204  s_SSEG                          
+     00000292  l_CONST                         
+     00000C6D  l_CODE                          
      00008000  s_HOME                          
      00008007  s_GSINIT                        
      0000802A  s_GSFINAL                       
      0000802D  s_CONST                         
-     00008052  s_CODE                          
-     00008052  s_INITIALIZER                   
+     000082BF  s_INITIALIZER                   
+     000082C2  s_CODE                          
 
 ASxxxx Linker V03.00/V05.40 + sdld,  page 2.
 Hexadecimal  [32-Bits]
 
 Area                                    Addr        Size        Decimal Bytes (Attributes)
 --------------------------------        ----        ----        ------- ----- ------------
-SSEG                                00000001    00000001 =           1. bytes (REL,CON)
+DATA                                00000001    00000200 =         512. bytes (REL,CON)
 
       Value  Global                              Global Defined In Module
       -----  --------------------------------   ------------------------
@@ -47,7 +47,7 @@ Hexadecimal  [32-Bits]
 
 Area                                    Addr        Size        Decimal Bytes (Attributes)
 --------------------------------        ----        ----        ------- ----- ------------
-HOME                                00008000    00000007 =           7. bytes (REL,CON)
+INITIALIZED                         00000201    00000003 =           3. bytes (REL,CON)
 
       Value  Global                              Global Defined In Module
       -----  --------------------------------   ------------------------
@@ -56,7 +56,7 @@ Hexadecimal  [32-Bits]
 
 Area                                    Addr        Size        Decimal Bytes (Attributes)
 --------------------------------        ----        ----        ------- ----- ------------
-GSINIT                              00008007    00000023 =          35. bytes (REL,CON)
+SSEG                                00000204    00000001 =           1. bytes (REL,CON)
 
       Value  Global                              Global Defined In Module
       -----  --------------------------------   ------------------------
@@ -65,7 +65,7 @@ Hexadecimal  [32-Bits]
 
 Area                                    Addr        Size        Decimal Bytes (Attributes)
 --------------------------------        ----        ----        ------- ----- ------------
-GSFINAL                             0000802A    00000003 =           3. bytes (REL,CON)
+HOME                                00008000    00000007 =           7. bytes (REL,CON)
 
       Value  Global                              Global Defined In Module
       -----  --------------------------------   ------------------------
@@ -74,7 +74,7 @@ Hexadecimal  [32-Bits]
 
 Area                                    Addr        Size        Decimal Bytes (Attributes)
 --------------------------------        ----        ----        ------- ----- ------------
-CONST                               0000802D    00000025 =          37. bytes (REL,CON)
+GSINIT                              00008007    00000023 =          35. bytes (REL,CON)
 
       Value  Global                              Global Defined In Module
       -----  --------------------------------   ------------------------
@@ -83,36 +83,95 @@ Hexadecimal  [32-Bits]
 
 Area                                    Addr        Size        Decimal Bytes (Attributes)
 --------------------------------        ----        ----        ------- ----- ------------
-CODE                                00008052    0000050B =        1291. bytes (REL,CON)
+GSFINAL                             0000802A    00000003 =           3. bytes (REL,CON)
 
       Value  Global                              Global Defined In Module
       -----  --------------------------------   ------------------------
-     00008052  _main                              main
-     000080F8  _clock_init                        clock_conf
-     00008113  _delay                             delay
-     0000813D  _delay_ms                          delay
-     00008152  _delay_us                          delay
-     00008167  _GPIO_Init                         gpio
-     00008360  _GPIO_WriteHigh                    gpio
-     0000839B  _GPIO_WriteLow                     gpio
-     000083DF  _GPIO_Toggle                       gpio
-     0000841A  _GPIO_Read                         gpio
-     00008460  _GPIO_Write                        gpio
-     0000847A  _uart_init                         uart
-     000084B7  _uart_write                        uart
-     000084E7  _uart_read                         uart
-     000084F2  __divulong                         _divulong
-     0000854D  ___sdcc_external_startup           _startup
-     0000854F  _strlen                            strlen
-
 ASxxxx Linker V03.00/V05.40 + sdld,  page 8.
+Hexadecimal  [32-Bits]
+
+Area                                    Addr        Size        Decimal Bytes (Attributes)
+--------------------------------        ----        ----        ------- ----- ------------
+CONST                               0000802D    00000292 =         658. bytes (REL,CON)
+
+      Value  Global                              Global Defined In Module
+      -----  --------------------------------   ------------------------
+ASxxxx Linker V03.00/V05.40 + sdld,  page 9.
+Hexadecimal  [32-Bits]
+
+Area                                    Addr        Size        Decimal Bytes (Attributes)
+--------------------------------        ----        ----        ------- ----- ------------
+INITIALIZER                         000082BF    00000003 =           3. bytes (REL,CON)
+
+      Value  Global                              Global Defined In Module
+      -----  --------------------------------   ------------------------
+ASxxxx Linker V03.00/V05.40 + sdld,  page 10.
+Hexadecimal  [32-Bits]
+
+Area                                    Addr        Size        Decimal Bytes (Attributes)
+--------------------------------        ----        ----        ------- ----- ------------
+CODE                                000082C2    00000C6D =        3181. bytes (REL,CON)
+
+      Value  Global                              Global Defined In Module
+      -----  --------------------------------   ------------------------
+     000082C2  _main                              main
+     000083B5  _clock_init                        clock_conf
+     000083D0  _delay                             delay
+     000083FA  _delay_ms                          delay
+     0000840F  _delay_us                          delay
+     00008424  _GPIO_Init                         gpio_s3
+     0000861D  _GPIO_WriteHigh                    gpio_s3
+     00008658  _GPIO_WriteLow                     gpio_s3
+     0000869C  _GPIO_Toggle                       gpio_s3
+     000086D7  _GPIO_Read                         gpio_s3
+     0000871D  _GPIO_Write                        gpio_s3
+     00008737  _i2c_init                          i2c
+     000087D7  _i2c_start                         i2c
+     000087E1  _i2c_stop                          i2c
+     000087EB  _i2c_write                         i2c
+     000087F4  _i2c_send_addr                     i2c
+     000087FD  _i2c_write_data                    i2c
+     0000882F  _i2c_read_data                     i2c
+     00008888  _i2c_reset                         i2c
+     0000893F  _oled_init                         oled
+     000089B3  _oled_deinit                       oled
+     000089B8  _oled_clear                        oled
+     000089CA  _oled_clear_page                   oled
+     00008A20  _oled_update                       oled
+     00008A23  _oled_set_pixel                    oled
+     00008A7B  _oled_draw_line                    oled
+     00008B41  _oled_draw_rect                    oled
+     00008B95  _oled_fill_rect                    oled
+     00008BED  _oled_gotoxy                       oled
+     00008C04  _oled_putc                         oled
+     00008C90  _oled_puts                         oled
+     00008C9E  _oled_puts_at                      oled
+     00008CB1  _oled_set_font                     oled
+     00008CB5  _oled_set_contrast                 oled
+     00008CBF  _oled_invert                       oled
+     00008CC4  _oled_normal                       oled
+     00008CC9  _oled_scroll_left                  oled
+     00008D04  _oled_scroll_right                 oled
+     00008D3F  _oled_scroll_stop                  oled
+     00008D44  _oled_print_number                 oled
+     00008D9D  _oled_print_hex                    oled
+     00008DD0  _uart_init                         uart
+     00008E0D  _uart_write                        uart
+     00008E3D  _uart_read                         uart
+     00008E48  __divulong                         _divulong
+     00008EA3  ___sdcc_external_startup           _startup
+     00008EA5  _strlen                            strlen
+     00008EB3  __mullong                          
+ASxxxx Linker V03.00/V05.40 + sdld,  page 11.
 
 Files Linked                              [ module(s) ]
 
 out/main.rel                              [ main ]
 out/clock_conf.rel                        [ clock_conf ]
 out/delay.rel                             [ delay ]
-out/gpio.rel                              [ gpio ]
+out/gpio_s3.rel                           [ gpio_s3 ]
+out/i2c.rel                               [ i2c ]
+out/oled.rel                              [ oled ]
 out/uart.rel                              [ uart ]
 
 
@@ -124,8 +183,10 @@ C:\Program Files\SDCC\bin\..\lib\stm8/stm8.lib
                                           [ _startup.rel ]
 C:\Program Files\SDCC\bin\..\lib\stm8/stm8.lib
                                           [ strlen.rel ]
+C:\Program Files\SDCC\bin\..\lib\stm8/stm8.lib
+                                          [ _mullong.rel ]
 
-ASxxxx Linker V03.00/V05.40 + sdld,  page 9.
+ASxxxx Linker V03.00/V05.40 + sdld,  page 12.
 
 User Base Address Definitions
 

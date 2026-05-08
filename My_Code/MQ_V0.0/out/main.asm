@@ -8,10 +8,13 @@
 ; Public variables in this module
 ;--------------------------------------------------------
 	.globl _main
-	.globl _uart_read
+	.globl _oled_set_font
+	.globl _oled_puts_at
+	.globl _oled_clear
+	.globl _oled_init
+	.globl _i2c_init
 	.globl _uart_write
 	.globl _uart_init
-	.globl _delay
 	.globl _delay_ms
 	.globl _GPIO_Read
 	.globl _GPIO_WriteLow
@@ -94,124 +97,187 @@ __sdcc_program_startup:
 ; code
 ;--------------------------------------------------------
 	.area CODE
-;	src/main.c: 23: int main(void)
+;	src/main.c: 30: int main(void)
 ;	-----------------------------------------
 ;	 function main
 ;	-----------------------------------------
 _main:
-;	src/main.c: 26: CLK_ECKR |= CLK_ECKR_HSEEN;
+;	src/main.c: 33: CLK_ECKR |= CLK_ECKR_HSEEN;
 	bset	0x50c1, #0
-;	src/main.c: 27: while(!(CLK_ECKR & CLK_ECKR_HSERDY));
+;	src/main.c: 34: while(!(CLK_ECKR & CLK_ECKR_HSERDY));
 00101$:
 	btjf	0x50c1, #1, 00101$
-;	src/main.c: 28: CLK_SWR = CLK_SWR_HSE;
+;	src/main.c: 35: CLK_SWR = CLK_SWR_HSE;
 	mov	0x50c4+0, #0xb4
-;	src/main.c: 29: CLK_SWCR |= CLK_SWCR_SWEN;
+;	src/main.c: 36: CLK_SWCR |= CLK_SWCR_SWEN;
 	bset	0x50c5, #1
-;	src/main.c: 30: while(CLK_SWCR & CLK_SWCR_SWBSY);
+;	src/main.c: 37: while(CLK_SWCR & CLK_SWCR_SWBSY);
 00104$:
 	btjt	0x50c5, #0, 00104$
-;	src/main.c: 31: CLK_CKDIVR = 0x00; // 16MHz system clock
+;	src/main.c: 38: CLK_CKDIVR = 0x00;
 	mov	0x50c6+0, #0x00
-;	src/main.c: 34: uart_init(9600);  
+;	src/main.c: 41: i2c_init(16000000, I2C_SPEED_STANDARD);
+	push	#0xa0
+	push	#0x86
+	push	#0x01
+	push	#0x00
+	push	#0x00
+	push	#0x24
+	push	#0xf4
+	push	#0x00
+	call	_i2c_init
+;	src/main.c: 44: uart_init(9600);
 	push	#0x80
 	push	#0x25
 	clrw	x
 	pushw	x
 	call	_uart_init
-;	src/main.c: 37: GPIO_Init(LED_PORT, LED_PIN, GPIO_MODE_OUTPUT_PUSH_PULL_LOW, GPIO_SPEED_SLOW);
+;	src/main.c: 47: GPIO_Init(LED_PORT, LED_PIN, GPIO_MODE_OUTPUT_PUSH_PULL_LOW, GPIO_SPEED_SLOW);
 	push	#0x00
 	push	#0x02
 	push	#0x10
 	ld	a, #0x03
 	call	_GPIO_Init
-;	src/main.c: 38: GPIO_Init(RELAY_PORT, RELAY_PIN, GPIO_MODE_OUTPUT_PUSH_PULL_LOW, GPIO_SPEED_SLOW);
+;	src/main.c: 48: GPIO_Init(RELAY_PORT, RELAY_PIN, GPIO_MODE_OUTPUT_PUSH_PULL_LOW, GPIO_SPEED_SLOW);
 	push	#0x00
 	push	#0x02
 	push	#0x08
 	ld	a, #0x02
 	call	_GPIO_Init
-;	src/main.c: 39: GPIO_Init(TR_PORT, TR_PIN, GPIO_MODE_OUTPUT_PUSH_PULL_LOW, GPIO_SPEED_SLOW);
+;	src/main.c: 49: GPIO_Init(TR_PORT, TR_PIN, GPIO_MODE_OUTPUT_PUSH_PULL_LOW, GPIO_SPEED_SLOW);
 	push	#0x00
 	push	#0x02
 	push	#0x08
 	clr	a
 	call	_GPIO_Init
-;	src/main.c: 40: GPIO_Init(INPUT1_PORT, INPUT1_PIN, GPIO_MODE_INPUT_PULL_UP, GPIO_SPEED_SLOW);
+;	src/main.c: 50: GPIO_Init(INPUT1_PORT, INPUT1_PIN, GPIO_MODE_INPUT_PULL_UP, GPIO_SPEED_SLOW);
 	push	#0x00
 	push	#0x01
 	push	#0x20
 	ld	a, #0x02
 	call	_GPIO_Init
-;	src/main.c: 41: GPIO_Init(INPUT2_PORT, INPUT2_PIN, GPIO_MODE_INPUT_PULL_UP, GPIO_SPEED_SLOW);
+;	src/main.c: 51: GPIO_Init(INPUT2_PORT, INPUT2_PIN, GPIO_MODE_INPUT_PULL_UP, GPIO_SPEED_SLOW);
 	push	#0x00
 	push	#0x01
 	push	#0x40
 	ld	a, #0x02
 	call	_GPIO_Init
-;	src/main.c: 44: uart_write("System Ready!\r\n");
-	ldw	x, #(___str_0+0)
+;	src/main.c: 54: delay_ms(200);
+	ldw	x, #0x00c8
+	call	_delay_ms
+;	src/main.c: 55: oled_init();
+	call	_oled_init
+;	src/main.c: 56: oled_clear();
+	call	_oled_clear
+;	src/main.c: 59: oled_set_font(FONT_5X7); 
+	clr	a
+	call	_oled_set_font
+;	src/main.c: 60: oled_puts_at(0, 0, "System Ready!");
+	push	#<(___str_0+0)
+	push	#((___str_0+0) >> 8)
+	push	#0x00
+	clr	a
+	call	_oled_puts_at
+;	src/main.c: 61: oled_puts_at(0, 8, "STM8S003F3");
+	push	#<(___str_1+0)
+	push	#((___str_1+0) >> 8)
+	push	#0x08
+	clr	a
+	call	_oled_puts_at
+;	src/main.c: 62: oled_puts_at(0, 16, "OLED Display");
+	push	#<(___str_2+0)
+	push	#((___str_2+0) >> 8)
+	push	#0x10
+	clr	a
+	call	_oled_puts_at
+;	src/main.c: 63: oled_puts_at(0, 24, "I2C Interface");
+	push	#<(___str_3+0)
+	push	#((___str_3+0) >> 8)
+	push	#0x18
+	clr	a
+	call	_oled_puts_at
+;	src/main.c: 66: uart_write("System Ready!\r\n");
+	ldw	x, #(___str_4+0)
 	call	_uart_write
-;	src/main.c: 46: while(1) 
-00113$:
-;	src/main.c: 49: char received = uart_read();
-	call	_uart_read
-;	src/main.c: 51: if(received == '1') {
+;	src/main.c: 68: while(1) 
+00115$:
+;	src/main.c: 71: if((UART1_SR & UART_SR_RXNE)) {
+	btjf	0x5230, #5, 00110$
+;	src/main.c: 72: char received = UART1_DR;
+	ld	a, 0x5231
+;	src/main.c: 74: if(received == '1') {
 	cp	a, #0x31
-	jrne	00108$
-;	src/main.c: 52: uart_write("Received number 1!\r\n");
-	ldw	x, #(___str_1+0)
+	jrne	00110$
+;	src/main.c: 75: uart_write("Received: 1\r\n");
+	ldw	x, #(___str_5+0)
 	call	_uart_write
-;	src/main.c: 54: GPIO_WriteLow(LED_PORT, LED_PIN);
+;	src/main.c: 78: GPIO_WriteLow(LED_PORT, LED_PIN);
 	push	#0x10
 	ld	a, #0x03
 	call	_GPIO_WriteLow
-;	src/main.c: 55: delay_ms(500);  // Using delay from delay.h
-	ldw	x, #0x01f4
+;	src/main.c: 79: delay_ms(300);
+	ldw	x, #0x012c
 	call	_delay_ms
-;	src/main.c: 56: GPIO_WriteHigh(LED_PORT, LED_PIN);
+;	src/main.c: 80: GPIO_WriteHigh(LED_PORT, LED_PIN);
 	push	#0x10
 	ld	a, #0x03
 	call	_GPIO_WriteHigh
-00108$:
-;	src/main.c: 60: if(GPIO_Read(INPUT1_PORT, INPUT1_PIN) == 1) {
+00110$:
+;	src/main.c: 85: if(GPIO_Read(INPUT1_PORT, INPUT1_PIN) == 1) {
 	push	#0x20
 	ld	a, #0x02
 	call	_GPIO_Read
 	dec	a
-	jrne	00110$
-;	src/main.c: 61: GPIO_WriteLow(LED_PORT, LED_PIN); // LED ON
+	jrne	00112$
+;	src/main.c: 86: GPIO_WriteLow(LED_PORT, LED_PIN);
 	push	#0x10
 	ld	a, #0x03
 	call	_GPIO_WriteLow
-	jra	00111$
-00110$:
-;	src/main.c: 63: GPIO_WriteHigh(LED_PORT, LED_PIN); // LED OFF
+	jra	00113$
+00112$:
+;	src/main.c: 88: GPIO_WriteHigh(LED_PORT, LED_PIN);
 	push	#0x10
 	ld	a, #0x03
 	call	_GPIO_WriteHigh
-00111$:
-;	src/main.c: 66: delay(10000);  // Using delay from delay.h
-	push	#0x10
-	push	#0x27
-	clrw	x
-	pushw	x
-	call	_delay
-	jra	00113$
-;	src/main.c: 68: }
+00113$:
+;	src/main.c: 91: delay_ms(100);
+	ldw	x, #0x0064
+	call	_delay_ms
+	jra	00115$
+;	src/main.c: 93: }
 	ret
 	.area CODE
 	.area CONST
 	.area CONST
 ___str_0:
 	.ascii "System Ready!"
+	.db 0x00
+	.area CODE
+	.area CONST
+___str_1:
+	.ascii "STM8S003F3"
+	.db 0x00
+	.area CODE
+	.area CONST
+___str_2:
+	.ascii "OLED Display"
+	.db 0x00
+	.area CODE
+	.area CONST
+___str_3:
+	.ascii "I2C Interface"
+	.db 0x00
+	.area CODE
+	.area CONST
+___str_4:
+	.ascii "System Ready!"
 	.db 0x0d
 	.db 0x0a
 	.db 0x00
 	.area CODE
 	.area CONST
-___str_1:
-	.ascii "Received number 1!"
+___str_5:
+	.ascii "Received: 1"
 	.db 0x0d
 	.db 0x0a
 	.db 0x00

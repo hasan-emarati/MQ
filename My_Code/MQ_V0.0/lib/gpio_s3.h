@@ -1,5 +1,5 @@
-#ifndef GPIO_H
-#define GPIO_H
+#ifndef GPIO_S3_H
+#define GPIO_S3_H
 
 #include <stdint.h>
 #include "stm8.h"
