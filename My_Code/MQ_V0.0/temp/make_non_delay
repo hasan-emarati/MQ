@@ -1,0 +1,101 @@
+## Select one of these
+#DEVICE = stm8s003f3
+DEVICE = stm8s103f3
+
+## Directories
+SRCDIR = src
+LIBDIR = lib
+OUTDIR = out
+
+## Get program name from enclosing directory name
+PROGRAM = $(lastword $(subst /, ,$(CURDIR)))
+
+SOURCES = $(wildcard $(SRCDIR)/*.c)
+LIBRARIES = $(wildcard $(LIBDIR)/*.c)
+ALL_SOURCES = $(SOURCES) $(LIBRARIES)
+OBJECTS = $(addprefix $(OUTDIR)/, $(notdir $(ALL_SOURCES:.c=.rel)))
+HEADERS = $(wildcard $(LIBDIR)/*.h)
+
+## Tools
+CC = sdcc
+PROGRAMMER = stlinkv2
+OBJCOPY = objcopy
+PACKIHX = packihx
+
+## Compiler flags
+DEFINES = -D$(DEVICE)
+CPPFLAGS = -I$(LIBDIR)
+CFLAGS = --Werror --std-sdcc99 -mstm8 $(DEFINES)
+LDFLAGS = -mstm8 --out-fmt-ihx
+LDLIBS = -lstm8
+
+## Colors for output (optional - remove if not supported)
+RED = 
+GREEN = 
+YELLOW = 
+NC = 
+
+.PHONY: all clean flash hex size dirs help
+
+all: dirs $(OUTDIR)/$(PROGRAM).hex
+
+dirs:
+	@if not exist $(OUTDIR) mkdir $(OUTDIR)
+
+help:
+	@echo "Available targets:"
+	@echo "  make all     - Build the project"
+	@echo "  make hex     - Generate hex file only"
+	@echo "  make flash   - Flash to MCU"
+	@echo "  make clean   - Remove build files"
+	@echo "  make info    - Show configuration"
+	@echo "  make help    - Show this help"
+
+hex: $(OUTDIR)/$(PROGRAM).hex
+
+$(OUTDIR)/$(PROGRAM).hex: $(OUTDIR)/$(PROGRAM).ihx
+	@echo "Converting to HEX..."
+	$(OBJCOPY) -I ihex -O ihex $< $@ 2>nul || $(PACKIHX) $< > $@
+	@echo "✓ HEX: $@"
+
+$(OUTDIR)/$(PROGRAM).ihx: $(OBJECTS)
+	@echo "Linking..."
+	$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $@
+	@echo "✓ Linked: $@"
+
+$(OUTDIR)/%.rel: $(SRCDIR)/%.c $(HEADERS)
+	@echo "Compiling $<..."
+	$(CC) $(CFLAGS) $(CPPFLAGS) -c -o $@ $<
+	@echo "✓ Compiled: $(notdir $@)"
+
+$(OUTDIR)/%.rel: $(LIBDIR)/%.c $(HEADERS)
+	@echo "Compiling $<..."
+	$(CC) $(CFLAGS) $(CPPFLAGS) -c -o $@ $<
+	@echo "✓ Compiled: $(notdir $@)"
+
+clean:
+	@echo "Cleaning..."
+	@if exist $(OUTDIR) rmdir /s /q $(OUTDIR)
+	@echo "✓ Clean done"
+
+flash: $(OUTDIR)/$(PROGRAM).hex
+	@echo "Flashing to $(DEVICE)..."
+	stm8flash -c $(PROGRAMMER) -p $(DEVICE) -w $<
+	@echo "✓ Flash done"
+
+info:
+	@echo "Project Info:"
+	@echo "  Device:    $(DEVICE)"
+	@echo "  Program:   $(PROGRAM)"
+	@echo "  Source dir: $(SRCDIR)"
+	@echo "  Library dir: $(LIBDIR)"
+	@echo "  Output dir: $(OUTDIR)"
+	@echo "  Sources:   $(SOURCES)"
+	@echo "  Libraries: $(LIBRARIES)"
+	@echo "  Headers:   $(HEADERS)"
+	@echo "  Objects:   $(OBJECTS)"
+
+size: $(OUTDIR)/$(PROGRAM).ihx
+	@echo "Memory usage:"
+	$(CC) -mstm8 --code-loc 0x8000 --code-size 0x8000 $(OBJECTS) -o $(OUTDIR)/temp.ihx 2>&1 | findstr "code size"
+	@if exist $(OUTDIR)\temp.ihx del $(OUTDIR)\temp.ihx

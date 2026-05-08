@@ -1,0 +1,14 @@
+-muwx
+-i out/MQ_V0.0.ihx
+-b HOME = 0x8000
+-b DATA = 0x0001
+-k C:\Program Files\SDCC\bin\..\lib\stm8
+-l stm8
+-l stm8
+out/main.rel
+out/clock_conf.rel
+out/delay.rel
+out/gpio.rel
+out/uart.rel
+
+-e

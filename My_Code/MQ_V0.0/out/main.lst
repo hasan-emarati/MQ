@@ -1,0 +1,223 @@
+                                      1 ;--------------------------------------------------------
+                                      2 ; File Created by SDCC : free open source ISO C Compiler
+                                      3 ; Version 4.5.0 #15242 (MINGW64)
+                                      4 ;--------------------------------------------------------
+                                      5 	.module main
+                                      6 	
+                                      7 ;--------------------------------------------------------
+                                      8 ; Public variables in this module
+                                      9 ;--------------------------------------------------------
+                                     10 	.globl _main
+                                     11 	.globl _uart_read
+                                     12 	.globl _uart_write
+                                     13 	.globl _uart_init
+                                     14 	.globl _delay
+                                     15 	.globl _delay_ms
+                                     16 	.globl _GPIO_Read
+                                     17 	.globl _GPIO_WriteLow
+                                     18 	.globl _GPIO_WriteHigh
+                                     19 	.globl _GPIO_Init
+                                     20 ;--------------------------------------------------------
+                                     21 ; ram data
+                                     22 ;--------------------------------------------------------
+                                     23 	.area DATA
+                                     24 ;--------------------------------------------------------
+                                     25 ; ram data
+                                     26 ;--------------------------------------------------------
+                                     27 	.area INITIALIZED
+                                     28 ;--------------------------------------------------------
+                                     29 ; Stack segment in internal ram
+                                     30 ;--------------------------------------------------------
+                                     31 	.area SSEG
+      000000                         32 __start__stack:
+      000000                         33 	.ds	1
+                                     34 
+                                     35 ;--------------------------------------------------------
+                                     36 ; absolute external ram data
+                                     37 ;--------------------------------------------------------
+                                     38 	.area DABS (ABS)
+                                     39 
+                                     40 ; default segment ordering for linker
+                                     41 	.area HOME
+                                     42 	.area GSINIT
+                                     43 	.area GSFINAL
+                                     44 	.area CONST
+                                     45 	.area INITIALIZER
+                                     46 	.area CODE
+                                     47 
+                                     48 ;--------------------------------------------------------
+                                     49 ; interrupt vector
+                                     50 ;--------------------------------------------------------
+                                     51 	.area HOME
+      000000                         52 __interrupt_vect:
+      000000 82v00u00u00             53 	int s_GSINIT ; reset
+                                     54 ;--------------------------------------------------------
+                                     55 ; global & static initialisations
+                                     56 ;--------------------------------------------------------
+                                     57 	.area HOME
+                                     58 	.area GSINIT
+                                     59 	.area GSFINAL
+                                     60 	.area GSINIT
+      000000 CDr00r00         [ 4]   61 	call	___sdcc_external_startup
+      000003 4D               [ 1]   62 	tnz	a
+      000004 27 03            [ 1]   63 	jreq	__sdcc_init_data
+      000006 CCr00r04         [ 2]   64 	jp	__sdcc_program_startup
+      000009                         65 __sdcc_init_data:
+                                     66 ; stm8_genXINIT() start
+      000009 AEr00r00         [ 2]   67 	ldw x, #l_DATA
+      00000C 27 07            [ 1]   68 	jreq	00002$
+      00000E                         69 00001$:
+      00000E 72 4FuFFuFF      [ 1]   70 	clr (s_DATA - 1, x)
+      000012 5A               [ 2]   71 	decw x
+      000013 26 F9            [ 1]   72 	jrne	00001$
+      000015                         73 00002$:
+      000015 AEr00r00         [ 2]   74 	ldw	x, #l_INITIALIZER
+      000018 27 09            [ 1]   75 	jreq	00004$
+      00001A                         76 00003$:
+      00001A D6uFFuFF         [ 1]   77 	ld	a, (s_INITIALIZER - 1, x)
+      00001D D7uFFuFF         [ 1]   78 	ld	(s_INITIALIZED - 1, x), a
+      000020 5A               [ 2]   79 	decw	x
+      000021 26 F7            [ 1]   80 	jrne	00003$
+      000023                         81 00004$:
+                                     82 ; stm8_genXINIT() end
+                                     83 	.area GSFINAL
+      000000 CCr00r04         [ 2]   84 	jp	__sdcc_program_startup
+                                     85 ;--------------------------------------------------------
+                                     86 ; Home
+                                     87 ;--------------------------------------------------------
+                                     88 	.area HOME
+                                     89 	.area HOME
+      000004                         90 __sdcc_program_startup:
+      000004 CCr00r00         [ 2]   91 	jp	_main
+                                     92 ;	return from main will return to caller
+                                     93 ;--------------------------------------------------------
+                                     94 ; code
+                                     95 ;--------------------------------------------------------
+                                     96 	.area CODE
+                                     97 ;	src/main.c: 23: int main(void)
+                                     98 ;	-----------------------------------------
+                                     99 ;	 function main
+                                    100 ;	-----------------------------------------
+      000000                        101 _main:
+                                    102 ;	src/main.c: 26: CLK_ECKR |= CLK_ECKR_HSEEN;
+      000000 72 10 50 C1      [ 1]  103 	bset	0x50c1, #0
+                                    104 ;	src/main.c: 27: while(!(CLK_ECKR & CLK_ECKR_HSERDY));
+      000004                        105 00101$:
+      000004 72 03 50 C1 FB   [ 2]  106 	btjf	0x50c1, #1, 00101$
+                                    107 ;	src/main.c: 28: CLK_SWR = CLK_SWR_HSE;
+      000009 35 B4 50 C4      [ 1]  108 	mov	0x50c4+0, #0xb4
+                                    109 ;	src/main.c: 29: CLK_SWCR |= CLK_SWCR_SWEN;
+      00000D 72 12 50 C5      [ 1]  110 	bset	0x50c5, #1
+                                    111 ;	src/main.c: 30: while(CLK_SWCR & CLK_SWCR_SWBSY);
+      000011                        112 00104$:
+      000011 72 00 50 C5 FB   [ 2]  113 	btjt	0x50c5, #0, 00104$
+                                    114 ;	src/main.c: 31: CLK_CKDIVR = 0x00; // 16MHz system clock
+      000016 35 00 50 C6      [ 1]  115 	mov	0x50c6+0, #0x00
+                                    116 ;	src/main.c: 34: uart_init(9600);  
+      00001A 4B 80            [ 1]  117 	push	#0x80
+      00001C 4B 25            [ 1]  118 	push	#0x25
+      00001E 5F               [ 1]  119 	clrw	x
+      00001F 89               [ 2]  120 	pushw	x
+      000020 CDr00r00         [ 4]  121 	call	_uart_init
+                                    122 ;	src/main.c: 37: GPIO_Init(LED_PORT, LED_PIN, GPIO_MODE_OUTPUT_PUSH_PULL_LOW, GPIO_SPEED_SLOW);
+      000023 4B 00            [ 1]  123 	push	#0x00
+      000025 4B 02            [ 1]  124 	push	#0x02
+      000027 4B 10            [ 1]  125 	push	#0x10
+      000029 A6 03            [ 1]  126 	ld	a, #0x03
+      00002B CDr00r00         [ 4]  127 	call	_GPIO_Init
+                                    128 ;	src/main.c: 38: GPIO_Init(RELAY_PORT, RELAY_PIN, GPIO_MODE_OUTPUT_PUSH_PULL_LOW, GPIO_SPEED_SLOW);
+      00002E 4B 00            [ 1]  129 	push	#0x00
+      000030 4B 02            [ 1]  130 	push	#0x02
+      000032 4B 08            [ 1]  131 	push	#0x08
+      000034 A6 02            [ 1]  132 	ld	a, #0x02
+      000036 CDr00r00         [ 4]  133 	call	_GPIO_Init
+                                    134 ;	src/main.c: 39: GPIO_Init(TR_PORT, TR_PIN, GPIO_MODE_OUTPUT_PUSH_PULL_LOW, GPIO_SPEED_SLOW);
+      000039 4B 00            [ 1]  135 	push	#0x00
+      00003B 4B 02            [ 1]  136 	push	#0x02
+      00003D 4B 08            [ 1]  137 	push	#0x08
+      00003F 4F               [ 1]  138 	clr	a
+      000040 CDr00r00         [ 4]  139 	call	_GPIO_Init
+                                    140 ;	src/main.c: 40: GPIO_Init(INPUT1_PORT, INPUT1_PIN, GPIO_MODE_INPUT_PULL_UP, GPIO_SPEED_SLOW);
+      000043 4B 00            [ 1]  141 	push	#0x00
+      000045 4B 01            [ 1]  142 	push	#0x01
+      000047 4B 20            [ 1]  143 	push	#0x20
+      000049 A6 02            [ 1]  144 	ld	a, #0x02
+      00004B CDr00r00         [ 4]  145 	call	_GPIO_Init
+                                    146 ;	src/main.c: 41: GPIO_Init(INPUT2_PORT, INPUT2_PIN, GPIO_MODE_INPUT_PULL_UP, GPIO_SPEED_SLOW);
+      00004E 4B 00            [ 1]  147 	push	#0x00
+      000050 4B 01            [ 1]  148 	push	#0x01
+      000052 4B 40            [ 1]  149 	push	#0x40
+      000054 A6 02            [ 1]  150 	ld	a, #0x02
+      000056 CDr00r00         [ 4]  151 	call	_GPIO_Init
+                                    152 ;	src/main.c: 44: uart_write("System Ready!\r\n");
+      000059 AEr00r00         [ 2]  153 	ldw	x, #(___str_0+0)
+      00005C CDr00r00         [ 4]  154 	call	_uart_write
+                                    155 ;	src/main.c: 46: while(1) 
+      00005F                        156 00113$:
+                                    157 ;	src/main.c: 49: char received = uart_read();
+      00005F CDr00r00         [ 4]  158 	call	_uart_read
+                                    159 ;	src/main.c: 51: if(received == '1') {
+      000062 A1 31            [ 1]  160 	cp	a, #0x31
+      000064 26 1A            [ 1]  161 	jrne	00108$
+                                    162 ;	src/main.c: 52: uart_write("Received number 1!\r\n");
+      000066 AEr00r10         [ 2]  163 	ldw	x, #(___str_1+0)
+      000069 CDr00r00         [ 4]  164 	call	_uart_write
+                                    165 ;	src/main.c: 54: GPIO_WriteLow(LED_PORT, LED_PIN);
+      00006C 4B 10            [ 1]  166 	push	#0x10
+      00006E A6 03            [ 1]  167 	ld	a, #0x03
+      000070 CDr00r00         [ 4]  168 	call	_GPIO_WriteLow
+                                    169 ;	src/main.c: 55: delay_ms(500);  // Using delay from delay.h
+      000073 AE 01 F4         [ 2]  170 	ldw	x, #0x01f4
+      000076 CDr00r00         [ 4]  171 	call	_delay_ms
+                                    172 ;	src/main.c: 56: GPIO_WriteHigh(LED_PORT, LED_PIN);
+      000079 4B 10            [ 1]  173 	push	#0x10
+      00007B A6 03            [ 1]  174 	ld	a, #0x03
+      00007D CDr00r00         [ 4]  175 	call	_GPIO_WriteHigh
+      000080                        176 00108$:
+                                    177 ;	src/main.c: 60: if(GPIO_Read(INPUT1_PORT, INPUT1_PIN) == 1) {
+      000080 4B 20            [ 1]  178 	push	#0x20
+      000082 A6 02            [ 1]  179 	ld	a, #0x02
+      000084 CDr00r00         [ 4]  180 	call	_GPIO_Read
+      000087 4A               [ 1]  181 	dec	a
+      000088 26 09            [ 1]  182 	jrne	00110$
+                                    183 ;	src/main.c: 61: GPIO_WriteLow(LED_PORT, LED_PIN); // LED ON
+      00008A 4B 10            [ 1]  184 	push	#0x10
+      00008C A6 03            [ 1]  185 	ld	a, #0x03
+      00008E CDr00r00         [ 4]  186 	call	_GPIO_WriteLow
+      000091 20 07            [ 2]  187 	jra	00111$
+      000093                        188 00110$:
+                                    189 ;	src/main.c: 63: GPIO_WriteHigh(LED_PORT, LED_PIN); // LED OFF
+      000093 4B 10            [ 1]  190 	push	#0x10
+      000095 A6 03            [ 1]  191 	ld	a, #0x03
+      000097 CDr00r00         [ 4]  192 	call	_GPIO_WriteHigh
+      00009A                        193 00111$:
+                                    194 ;	src/main.c: 66: delay(10000);  // Using delay from delay.h
+      00009A 4B 10            [ 1]  195 	push	#0x10
+      00009C 4B 27            [ 1]  196 	push	#0x27
+      00009E 5F               [ 1]  197 	clrw	x
+      00009F 89               [ 2]  198 	pushw	x
+      0000A0 CDr00r00         [ 4]  199 	call	_delay
+      0000A3 20 BA            [ 2]  200 	jra	00113$
+                                    201 ;	src/main.c: 68: }
+      0000A5 81               [ 4]  202 	ret
+                                    203 	.area CODE
+                                    204 	.area CONST
+                                    205 	.area CONST
+      000000                        206 ___str_0:
+      000000 53 79 73 74 65 6D 20   207 	.ascii "System Ready!"
+             52 65 61 64 79 21
+      00000D 0D                     208 	.db 0x0d
+      00000E 0A                     209 	.db 0x0a
+      00000F 00                     210 	.db 0x00
+                                    211 	.area CODE
+                                    212 	.area CONST
+      000010                        213 ___str_1:
+      000010 52 65 63 65 69 76 65   214 	.ascii "Received number 1!"
+             64 20 6E 75 6D 62 65
+             72 20 31 21
+      000022 0D                     215 	.db 0x0d
+      000023 0A                     216 	.db 0x0a
+      000024 00                     217 	.db 0x00
+                                    218 	.area CODE
+                                    219 	.area INITIALIZER
+                                    220 	.area CABS (ABS)
