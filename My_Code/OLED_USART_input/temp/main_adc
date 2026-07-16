@@ -1,0 +1,178 @@
+// STM8S003f3
+#include "stm8.h"
+#include "gpio_s3.h"
+#include "delay.h"
+#include "uart.h"
+#include "i2c.h"
+#include "oled.h"
+#include <stdio.h>
+
+/*=============================================
+                Define Value
+===============================================*/
+#define LED_PORT     GPIO_PORT_PD
+#define LED_PIN      PIN4
+
+#define RELAY_PORT   GPIO_PORT_PC
+#define RELAY_PIN    PIN3
+
+#define TR_PORT      GPIO_PORT_PA
+#define TR_PIN       PIN3
+
+#define INPUT1_PORT  GPIO_PORT_PC
+#define INPUT1_PIN   PIN5
+
+#define INPUT2_PORT  GPIO_PORT_PC
+#define INPUT2_PIN   PIN6
+
+// ADC channels
+#define ADC_CHANNEL_PC4 2   // AIN2 - PC4
+#define ADC_CHANNEL_PD3 6   // AIN6 - PD3
+
+/*=============================================
+                  Prototypes
+===============================================*/
+void init_adc(void);
+uint16_t analog_read_pc4(void);
+uint16_t analog_read_pd3(void);
+
+/*=============================================
+                    ADC
+===============================================*/
+void init_adc(void) {
+    // Select ADC channel (start with PC4 = AIN2)
+    ADC_CSR = ADC_CHANNEL_PC4;
+    
+    // Configure ADC
+    ADC_CR1 = 0x00;  // Single conversion mode, no prescaler
+    ADC_CR2 = 0x00;  // Left aligned data
+    ADC_CR3 = 0x00;  // No data buffer
+    
+    // Power on ADC
+    ADC_CR1 |= ADC_CR1_ADON;
+    
+    delay(1000); // Wait for ADC stabilization
+}
+
+uint16_t analog_read_pc4(void) {
+    uint16_t adc_value;
+    
+    // Select channel PC4 (AIN2)
+    ADC_CSR = ADC_CHANNEL_PC4;
+    
+    // Start conversion
+    ADC_CR1 |= ADC_CR1_ADON;
+    
+    // Wait for End of Conversion
+    while(!(ADC_CSR & ADC_CSR_EOC));
+    
+    // Read ADC value (left aligned)
+    adc_value = (ADC_DRH << 2) | (ADC_DRL >> 6);
+    
+    // Clear EOC flag
+    ADC_CSR &= ~ADC_CSR_EOC;
+    
+    return adc_value;
+}
+
+uint16_t analog_read_pd3(void) {
+    uint16_t adc_value;
+    
+    // Select channel PD3 (AIN6)
+    ADC_CSR = ADC_CHANNEL_PD3;
+    
+    // Start conversion
+    ADC_CR1 |= ADC_CR1_ADON;
+    
+    // Wait for End of Conversion
+    while(!(ADC_CSR & ADC_CSR_EOC));
+    
+    // Read ADC value (left aligned)
+    adc_value = (ADC_DRH << 2) | (ADC_DRL >> 6);
+    
+    // Clear EOC flag
+    ADC_CSR &= ~ADC_CSR_EOC;
+    
+    return adc_value;
+}
+
+/*=============================================
+                    Main
+===============================================*/
+void main(void)
+{
+    char buffer[80];
+    uint16_t adc_raw_pc4;
+    uint16_t adc_raw_pd3;
+    
+    // Configure HSE clock (16MHz)
+    CLK_ECKR |= CLK_ECKR_HSEEN;
+    while(!(CLK_ECKR & CLK_ECKR_HSERDY));
+    CLK_SWR = CLK_SWR_HSE;
+    CLK_SWCR |= CLK_SWCR_SWEN;
+    while(CLK_SWCR & CLK_SWCR_SWBSY);
+    CLK_CKDIVR = 0x00;
+    
+    // Initialize I2C
+    i2c_init(16000000, I2C_SPEED_STANDARD);
+    
+    // Initialize UART
+    uart_init(9600);
+    
+    // Initialize GPIO
+    GPIO_Init(LED_PORT, LED_PIN, GPIO_MODE_OUTPUT_PUSH_PULL_LOW, GPIO_SPEED_SLOW);
+    GPIO_Init(RELAY_PORT, RELAY_PIN, GPIO_MODE_OUTPUT_PUSH_PULL_LOW, GPIO_SPEED_SLOW);
+    GPIO_Init(TR_PORT, TR_PIN, GPIO_MODE_OUTPUT_PUSH_PULL_LOW, GPIO_SPEED_SLOW);
+    GPIO_Init(INPUT1_PORT, INPUT1_PIN, GPIO_MODE_INPUT_PULL_UP, GPIO_SPEED_SLOW);
+    GPIO_Init(INPUT2_PORT, INPUT2_PIN, GPIO_MODE_INPUT_PULL_UP, GPIO_SPEED_SLOW);
+
+    // Initialize OLED
+    delay_ms(200);
+    oled_init();
+    oled_clear();
+    
+    // Display startup message
+    oled_set_font(FONT_5X7); 
+    oled_puts_at(0, 0, "System Ready!");
+    oled_puts_at(0, 8, "STM8S003F3");
+    oled_puts_at(0, 16, "Dual ADC Mode");
+    oled_puts_at(0, 24, "PC4 & PD3");
+    
+    // Initialize ADC
+    init_adc();
+    
+    while(1) 
+    {
+        // Read both ADC values
+        adc_raw_pc4 = analog_read_pc4();
+        adc_raw_pd3 = analog_read_pd3();
+        
+        // Send data via UART
+        sprintf(buffer, "ADC-PC4: %4d | ADC-PD3: %4d \r\n", adc_raw_pc4, adc_raw_pd3);
+        
+        
+        // Check UART for any received data
+        if((uart_read())) {
+            char received = uart_read();
+            if(received == '1') {
+                uart_write("Command received: 1\r\n");
+                uart_write(buffer);
+                
+                // Blink LED as feedback
+                GPIO_WriteLow(LED_PORT, LED_PIN);
+                delay_ms(300);
+                GPIO_WriteHigh(LED_PORT, LED_PIN);
+            }
+        }
+        
+        // Monitor INPUT1 (LED indicator)
+        if(GPIO_Read(INPUT1_PORT, INPUT1_PIN) == 1) {
+            GPIO_WriteLow(LED_PORT, LED_PIN);
+        } else {
+            GPIO_WriteHigh(LED_PORT, LED_PIN);
+        }
+        
+        // Delay between ADC readings (500ms)
+        delay_ms(500);
+    }
+}

@@ -15,278 +15,410 @@
                                      15 	.globl _i2c_init
                                      16 	.globl _uart_write
                                      17 	.globl _uart_init
-                                     18 	.globl _delay_ms
-                                     19 	.globl _GPIO_Read
-                                     20 	.globl _GPIO_WriteLow
-                                     21 	.globl _GPIO_WriteHigh
-                                     22 	.globl _GPIO_Init
-                                     23 ;--------------------------------------------------------
-                                     24 ; ram data
-                                     25 ;--------------------------------------------------------
-                                     26 	.area DATA
-                                     27 ;--------------------------------------------------------
-                                     28 ; ram data
-                                     29 ;--------------------------------------------------------
-                                     30 	.area INITIALIZED
-                                     31 ;--------------------------------------------------------
-                                     32 ; Stack segment in internal ram
-                                     33 ;--------------------------------------------------------
-                                     34 	.area SSEG
-      000000                         35 __start__stack:
-      000000                         36 	.ds	1
-                                     37 
+                                     18 	.globl _delay
+                                     19 	.globl _delay_ms
+                                     20 	.globl _GPIO_Read
+                                     21 	.globl _GPIO_WriteLow
+                                     22 	.globl _GPIO_WriteHigh
+                                     23 	.globl _GPIO_Init
+                                     24 	.globl _sprintf
+                                     25 	.globl _init_adc
+                                     26 	.globl _analog_read_pc4
+                                     27 	.globl _analog_read_pd3
+                                     28 ;--------------------------------------------------------
+                                     29 ; ram data
+                                     30 ;--------------------------------------------------------
+                                     31 	.area DATA
+                                     32 ;--------------------------------------------------------
+                                     33 ; ram data
+                                     34 ;--------------------------------------------------------
+                                     35 	.area INITIALIZED
+                                     36 ;--------------------------------------------------------
+                                     37 ; Stack segment in internal ram
                                      38 ;--------------------------------------------------------
-                                     39 ; absolute external ram data
-                                     40 ;--------------------------------------------------------
-                                     41 	.area DABS (ABS)
+                                     39 	.area SSEG
+      000000                         40 __start__stack:
+      000000                         41 	.ds	1
                                      42 
-                                     43 ; default segment ordering for linker
-                                     44 	.area HOME
-                                     45 	.area GSINIT
-                                     46 	.area GSFINAL
-                                     47 	.area CONST
-                                     48 	.area INITIALIZER
-                                     49 	.area CODE
-                                     50 
-                                     51 ;--------------------------------------------------------
-                                     52 ; interrupt vector
-                                     53 ;--------------------------------------------------------
-                                     54 	.area HOME
-      000000                         55 __interrupt_vect:
-      000000 82v00u00u00             56 	int s_GSINIT ; reset
-                                     57 ;--------------------------------------------------------
-                                     58 ; global & static initialisations
-                                     59 ;--------------------------------------------------------
-                                     60 	.area HOME
-                                     61 	.area GSINIT
-                                     62 	.area GSFINAL
-                                     63 	.area GSINIT
-      000000 CDr00r00         [ 4]   64 	call	___sdcc_external_startup
-      000003 4D               [ 1]   65 	tnz	a
-      000004 27 03            [ 1]   66 	jreq	__sdcc_init_data
-      000006 CCr00r04         [ 2]   67 	jp	__sdcc_program_startup
-      000009                         68 __sdcc_init_data:
-                                     69 ; stm8_genXINIT() start
-      000009 AEr00r00         [ 2]   70 	ldw x, #l_DATA
-      00000C 27 07            [ 1]   71 	jreq	00002$
-      00000E                         72 00001$:
-      00000E 72 4FuFFuFF      [ 1]   73 	clr (s_DATA - 1, x)
-      000012 5A               [ 2]   74 	decw x
-      000013 26 F9            [ 1]   75 	jrne	00001$
-      000015                         76 00002$:
-      000015 AEr00r00         [ 2]   77 	ldw	x, #l_INITIALIZER
-      000018 27 09            [ 1]   78 	jreq	00004$
-      00001A                         79 00003$:
-      00001A D6uFFuFF         [ 1]   80 	ld	a, (s_INITIALIZER - 1, x)
-      00001D D7uFFuFF         [ 1]   81 	ld	(s_INITIALIZED - 1, x), a
-      000020 5A               [ 2]   82 	decw	x
-      000021 26 F7            [ 1]   83 	jrne	00003$
-      000023                         84 00004$:
-                                     85 ; stm8_genXINIT() end
-                                     86 	.area GSFINAL
-      000000 CCr00r04         [ 2]   87 	jp	__sdcc_program_startup
-                                     88 ;--------------------------------------------------------
-                                     89 ; Home
-                                     90 ;--------------------------------------------------------
-                                     91 	.area HOME
-                                     92 	.area HOME
-      000004                         93 __sdcc_program_startup:
-      000004 CCr00r00         [ 2]   94 	jp	_main
-                                     95 ;	return from main will return to caller
-                                     96 ;--------------------------------------------------------
-                                     97 ; code
-                                     98 ;--------------------------------------------------------
-                                     99 	.area CODE
-                                    100 ;	src/main.c: 30: int main(void)
-                                    101 ;	-----------------------------------------
-                                    102 ;	 function main
-                                    103 ;	-----------------------------------------
-      000000                        104 _main:
-                                    105 ;	src/main.c: 33: CLK_ECKR |= CLK_ECKR_HSEEN;
-      000000 72 10 50 C1      [ 1]  106 	bset	0x50c1, #0
-                                    107 ;	src/main.c: 34: while(!(CLK_ECKR & CLK_ECKR_HSERDY));
-      000004                        108 00101$:
-      000004 72 03 50 C1 FB   [ 2]  109 	btjf	0x50c1, #1, 00101$
-                                    110 ;	src/main.c: 35: CLK_SWR = CLK_SWR_HSE;
-      000009 35 B4 50 C4      [ 1]  111 	mov	0x50c4+0, #0xb4
-                                    112 ;	src/main.c: 36: CLK_SWCR |= CLK_SWCR_SWEN;
-      00000D 72 12 50 C5      [ 1]  113 	bset	0x50c5, #1
-                                    114 ;	src/main.c: 37: while(CLK_SWCR & CLK_SWCR_SWBSY);
-      000011                        115 00104$:
-      000011 72 00 50 C5 FB   [ 2]  116 	btjt	0x50c5, #0, 00104$
-                                    117 ;	src/main.c: 38: CLK_CKDIVR = 0x00;
-      000016 35 00 50 C6      [ 1]  118 	mov	0x50c6+0, #0x00
-                                    119 ;	src/main.c: 41: i2c_init(16000000, I2C_SPEED_STANDARD);
-      00001A 4B A0            [ 1]  120 	push	#0xa0
-      00001C 4B 86            [ 1]  121 	push	#0x86
-      00001E 4B 01            [ 1]  122 	push	#0x01
-      000020 4B 00            [ 1]  123 	push	#0x00
-      000022 4B 00            [ 1]  124 	push	#0x00
-      000024 4B 24            [ 1]  125 	push	#0x24
-      000026 4B F4            [ 1]  126 	push	#0xf4
-      000028 4B 00            [ 1]  127 	push	#0x00
-      00002A CDr00r00         [ 4]  128 	call	_i2c_init
-                                    129 ;	src/main.c: 44: uart_init(9600);
-      00002D 4B 80            [ 1]  130 	push	#0x80
-      00002F 4B 25            [ 1]  131 	push	#0x25
-      000031 5F               [ 1]  132 	clrw	x
-      000032 89               [ 2]  133 	pushw	x
-      000033 CDr00r00         [ 4]  134 	call	_uart_init
-                                    135 ;	src/main.c: 47: GPIO_Init(LED_PORT, LED_PIN, GPIO_MODE_OUTPUT_PUSH_PULL_LOW, GPIO_SPEED_SLOW);
-      000036 4B 00            [ 1]  136 	push	#0x00
-      000038 4B 02            [ 1]  137 	push	#0x02
-      00003A 4B 10            [ 1]  138 	push	#0x10
-      00003C A6 03            [ 1]  139 	ld	a, #0x03
-      00003E CDr00r00         [ 4]  140 	call	_GPIO_Init
-                                    141 ;	src/main.c: 48: GPIO_Init(RELAY_PORT, RELAY_PIN, GPIO_MODE_OUTPUT_PUSH_PULL_LOW, GPIO_SPEED_SLOW);
-      000041 4B 00            [ 1]  142 	push	#0x00
-      000043 4B 02            [ 1]  143 	push	#0x02
-      000045 4B 08            [ 1]  144 	push	#0x08
-      000047 A6 02            [ 1]  145 	ld	a, #0x02
-      000049 CDr00r00         [ 4]  146 	call	_GPIO_Init
-                                    147 ;	src/main.c: 49: GPIO_Init(TR_PORT, TR_PIN, GPIO_MODE_OUTPUT_PUSH_PULL_LOW, GPIO_SPEED_SLOW);
-      00004C 4B 00            [ 1]  148 	push	#0x00
-      00004E 4B 02            [ 1]  149 	push	#0x02
-      000050 4B 08            [ 1]  150 	push	#0x08
-      000052 4F               [ 1]  151 	clr	a
-      000053 CDr00r00         [ 4]  152 	call	_GPIO_Init
-                                    153 ;	src/main.c: 50: GPIO_Init(INPUT1_PORT, INPUT1_PIN, GPIO_MODE_INPUT_PULL_UP, GPIO_SPEED_SLOW);
-      000056 4B 00            [ 1]  154 	push	#0x00
-      000058 4B 01            [ 1]  155 	push	#0x01
-      00005A 4B 20            [ 1]  156 	push	#0x20
-      00005C A6 02            [ 1]  157 	ld	a, #0x02
-      00005E CDr00r00         [ 4]  158 	call	_GPIO_Init
-                                    159 ;	src/main.c: 51: GPIO_Init(INPUT2_PORT, INPUT2_PIN, GPIO_MODE_INPUT_PULL_UP, GPIO_SPEED_SLOW);
-      000061 4B 00            [ 1]  160 	push	#0x00
-      000063 4B 01            [ 1]  161 	push	#0x01
-      000065 4B 40            [ 1]  162 	push	#0x40
-      000067 A6 02            [ 1]  163 	ld	a, #0x02
-      000069 CDr00r00         [ 4]  164 	call	_GPIO_Init
-                                    165 ;	src/main.c: 54: delay_ms(200);
-      00006C AE 00 C8         [ 2]  166 	ldw	x, #0x00c8
-      00006F CDr00r00         [ 4]  167 	call	_delay_ms
-                                    168 ;	src/main.c: 55: oled_init();
-      000072 CDr00r00         [ 4]  169 	call	_oled_init
-                                    170 ;	src/main.c: 56: oled_clear();
-      000075 CDr00r00         [ 4]  171 	call	_oled_clear
-                                    172 ;	src/main.c: 59: oled_set_font(FONT_5X7); 
-      000078 4F               [ 1]  173 	clr	a
-      000079 CDr00r00         [ 4]  174 	call	_oled_set_font
-                                    175 ;	src/main.c: 60: oled_puts_at(0, 0, "System Ready!");
-      00007C 4Br00            [ 1]  176 	push	#<(___str_0+0)
-      00007E 4Bs00            [ 1]  177 	push	#((___str_0+0) >> 8)
-      000080 4B 00            [ 1]  178 	push	#0x00
-      000082 4F               [ 1]  179 	clr	a
-      000083 CDr00r00         [ 4]  180 	call	_oled_puts_at
-                                    181 ;	src/main.c: 61: oled_puts_at(0, 8, "STM8S003F3");
-      000086 4Br0E            [ 1]  182 	push	#<(___str_1+0)
-      000088 4Bs00            [ 1]  183 	push	#((___str_1+0) >> 8)
-      00008A 4B 08            [ 1]  184 	push	#0x08
-      00008C 4F               [ 1]  185 	clr	a
-      00008D CDr00r00         [ 4]  186 	call	_oled_puts_at
-                                    187 ;	src/main.c: 62: oled_puts_at(0, 16, "OLED Display");
-      000090 4Br19            [ 1]  188 	push	#<(___str_2+0)
-      000092 4Bs00            [ 1]  189 	push	#((___str_2+0) >> 8)
-      000094 4B 10            [ 1]  190 	push	#0x10
-      000096 4F               [ 1]  191 	clr	a
-      000097 CDr00r00         [ 4]  192 	call	_oled_puts_at
-                                    193 ;	src/main.c: 63: oled_puts_at(0, 24, "I2C Interface");
-      00009A 4Br26            [ 1]  194 	push	#<(___str_3+0)
-      00009C 4Bs00            [ 1]  195 	push	#((___str_3+0) >> 8)
-      00009E 4B 18            [ 1]  196 	push	#0x18
-      0000A0 4F               [ 1]  197 	clr	a
-      0000A1 CDr00r00         [ 4]  198 	call	_oled_puts_at
-                                    199 ;	src/main.c: 66: uart_write("System Ready!\r\n");
-      0000A4 AEr00r34         [ 2]  200 	ldw	x, #(___str_4+0)
-      0000A7 CDr00r00         [ 4]  201 	call	_uart_write
-                                    202 ;	src/main.c: 68: while(1) 
-      0000AA                        203 00115$:
-                                    204 ;	src/main.c: 71: if((UART1_SR & UART_SR_RXNE)) {
-      0000AA 72 0B 52 30 21   [ 2]  205 	btjf	0x5230, #5, 00110$
-                                    206 ;	src/main.c: 72: char received = UART1_DR;
-      0000AF C6 52 31         [ 1]  207 	ld	a, 0x5231
-                                    208 ;	src/main.c: 74: if(received == '1') {
-      0000B2 A1 31            [ 1]  209 	cp	a, #0x31
-      0000B4 26 1A            [ 1]  210 	jrne	00110$
-                                    211 ;	src/main.c: 75: uart_write("Received: 1\r\n");
-      0000B6 AEr00r44         [ 2]  212 	ldw	x, #(___str_5+0)
-      0000B9 CDr00r00         [ 4]  213 	call	_uart_write
-                                    214 ;	src/main.c: 78: GPIO_WriteLow(LED_PORT, LED_PIN);
-      0000BC 4B 10            [ 1]  215 	push	#0x10
-      0000BE A6 03            [ 1]  216 	ld	a, #0x03
-      0000C0 CDr00r00         [ 4]  217 	call	_GPIO_WriteLow
-                                    218 ;	src/main.c: 79: delay_ms(300);
-      0000C3 AE 01 2C         [ 2]  219 	ldw	x, #0x012c
-      0000C6 CDr00r00         [ 4]  220 	call	_delay_ms
-                                    221 ;	src/main.c: 80: GPIO_WriteHigh(LED_PORT, LED_PIN);
-      0000C9 4B 10            [ 1]  222 	push	#0x10
-      0000CB A6 03            [ 1]  223 	ld	a, #0x03
-      0000CD CDr00r00         [ 4]  224 	call	_GPIO_WriteHigh
-      0000D0                        225 00110$:
-                                    226 ;	src/main.c: 85: if(GPIO_Read(INPUT1_PORT, INPUT1_PIN) == 1) {
-      0000D0 4B 20            [ 1]  227 	push	#0x20
-      0000D2 A6 02            [ 1]  228 	ld	a, #0x02
-      0000D4 CDr00r00         [ 4]  229 	call	_GPIO_Read
-      0000D7 4A               [ 1]  230 	dec	a
-      0000D8 26 09            [ 1]  231 	jrne	00112$
-                                    232 ;	src/main.c: 86: GPIO_WriteLow(LED_PORT, LED_PIN);
-      0000DA 4B 10            [ 1]  233 	push	#0x10
-      0000DC A6 03            [ 1]  234 	ld	a, #0x03
-      0000DE CDr00r00         [ 4]  235 	call	_GPIO_WriteLow
-      0000E1 20 07            [ 2]  236 	jra	00113$
-      0000E3                        237 00112$:
-                                    238 ;	src/main.c: 88: GPIO_WriteHigh(LED_PORT, LED_PIN);
-      0000E3 4B 10            [ 1]  239 	push	#0x10
-      0000E5 A6 03            [ 1]  240 	ld	a, #0x03
-      0000E7 CDr00r00         [ 4]  241 	call	_GPIO_WriteHigh
-      0000EA                        242 00113$:
-                                    243 ;	src/main.c: 91: delay_ms(100);
-      0000EA AE 00 64         [ 2]  244 	ldw	x, #0x0064
-      0000ED CDr00r00         [ 4]  245 	call	_delay_ms
-      0000F0 20 B8            [ 2]  246 	jra	00115$
-                                    247 ;	src/main.c: 93: }
-      0000F2 81               [ 4]  248 	ret
-                                    249 	.area CODE
-                                    250 	.area CONST
-                                    251 	.area CONST
-      000000                        252 ___str_0:
-      000000 53 79 73 74 65 6D 20   253 	.ascii "System Ready!"
+                                     43 ;--------------------------------------------------------
+                                     44 ; absolute external ram data
+                                     45 ;--------------------------------------------------------
+                                     46 	.area DABS (ABS)
+                                     47 
+                                     48 ; default segment ordering for linker
+                                     49 	.area HOME
+                                     50 	.area GSINIT
+                                     51 	.area GSFINAL
+                                     52 	.area CONST
+                                     53 	.area INITIALIZER
+                                     54 	.area CODE
+                                     55 
+                                     56 ;--------------------------------------------------------
+                                     57 ; interrupt vector
+                                     58 ;--------------------------------------------------------
+                                     59 	.area HOME
+      000000                         60 __interrupt_vect:
+      000000 82v00u00u00             61 	int s_GSINIT ; reset
+                                     62 ;--------------------------------------------------------
+                                     63 ; global & static initialisations
+                                     64 ;--------------------------------------------------------
+                                     65 	.area HOME
+                                     66 	.area GSINIT
+                                     67 	.area GSFINAL
+                                     68 	.area GSINIT
+      000000 CDr00r00         [ 4]   69 	call	___sdcc_external_startup
+      000003 4D               [ 1]   70 	tnz	a
+      000004 27 03            [ 1]   71 	jreq	__sdcc_init_data
+      000006 CCr00r04         [ 2]   72 	jp	__sdcc_program_startup
+      000009                         73 __sdcc_init_data:
+                                     74 ; stm8_genXINIT() start
+      000009 AEr00r00         [ 2]   75 	ldw x, #l_DATA
+      00000C 27 07            [ 1]   76 	jreq	00002$
+      00000E                         77 00001$:
+      00000E 72 4FuFFuFF      [ 1]   78 	clr (s_DATA - 1, x)
+      000012 5A               [ 2]   79 	decw x
+      000013 26 F9            [ 1]   80 	jrne	00001$
+      000015                         81 00002$:
+      000015 AEr00r00         [ 2]   82 	ldw	x, #l_INITIALIZER
+      000018 27 09            [ 1]   83 	jreq	00004$
+      00001A                         84 00003$:
+      00001A D6uFFuFF         [ 1]   85 	ld	a, (s_INITIALIZER - 1, x)
+      00001D D7uFFuFF         [ 1]   86 	ld	(s_INITIALIZED - 1, x), a
+      000020 5A               [ 2]   87 	decw	x
+      000021 26 F7            [ 1]   88 	jrne	00003$
+      000023                         89 00004$:
+                                     90 ; stm8_genXINIT() end
+                                     91 	.area GSFINAL
+      000000 CCr00r04         [ 2]   92 	jp	__sdcc_program_startup
+                                     93 ;--------------------------------------------------------
+                                     94 ; Home
+                                     95 ;--------------------------------------------------------
+                                     96 	.area HOME
+                                     97 	.area HOME
+      000004                         98 __sdcc_program_startup:
+      000004 CCr00r6A         [ 2]   99 	jp	_main
+                                    100 ;	return from main will return to caller
+                                    101 ;--------------------------------------------------------
+                                    102 ; code
+                                    103 ;--------------------------------------------------------
+                                    104 	.area CODE
+                                    105 ;	src/main.c: 39: void init_adc(void) {
+                                    106 ;	-----------------------------------------
+                                    107 ;	 function init_adc
+                                    108 ;	-----------------------------------------
+      000000                        109 _init_adc:
+                                    110 ;	src/main.c: 41: ADC_CSR = ADC_CHANNEL_PC4;
+      000000 35 02 54 00      [ 1]  111 	mov	0x5400+0, #0x02
+                                    112 ;	src/main.c: 44: ADC_CR1 = 0x00;  // Single conversion mode, no prescaler
+      000004 35 00 54 01      [ 1]  113 	mov	0x5401+0, #0x00
+                                    114 ;	src/main.c: 45: ADC_CR2 = 0x00;  // Left aligned data
+      000008 35 00 54 02      [ 1]  115 	mov	0x5402+0, #0x00
+                                    116 ;	src/main.c: 46: ADC_CR3 = 0x00;  // No data buffer
+      00000C 35 00 54 03      [ 1]  117 	mov	0x5403+0, #0x00
+                                    118 ;	src/main.c: 49: ADC_CR1 |= ADC_CR1_ADON;
+      000010 72 10 54 01      [ 1]  119 	bset	0x5401, #0
+                                    120 ;	src/main.c: 51: delay(1000); // Wait for ADC stabilization
+      000014 4B E8            [ 1]  121 	push	#0xe8
+      000016 4B 03            [ 1]  122 	push	#0x03
+      000018 5F               [ 1]  123 	clrw	x
+      000019 89               [ 2]  124 	pushw	x
+      00001A CDr00r00         [ 4]  125 	call	_delay
+                                    126 ;	src/main.c: 52: }
+      00001D 81               [ 4]  127 	ret
+                                    128 ;	src/main.c: 54: uint16_t analog_read_pc4(void) {
+                                    129 ;	-----------------------------------------
+                                    130 ;	 function analog_read_pc4
+                                    131 ;	-----------------------------------------
+      00001E                        132 _analog_read_pc4:
+                                    133 ;	src/main.c: 58: ADC_CSR = ADC_CHANNEL_PC4;
+      00001E 35 02 54 00      [ 1]  134 	mov	0x5400+0, #0x02
+                                    135 ;	src/main.c: 61: ADC_CR1 |= ADC_CR1_ADON;
+      000022 72 10 54 01      [ 1]  136 	bset	0x5401, #0
+                                    137 ;	src/main.c: 64: while(!(ADC_CSR & ADC_CSR_EOC));
+      000026                        138 00101$:
+      000026 C6 54 00         [ 1]  139 	ld	a, 0x5400
+      000029 2A FB            [ 1]  140 	jrpl	00101$
+                                    141 ;	src/main.c: 67: adc_value = (ADC_DRH << 2) | (ADC_DRL >> 6);
+      00002B C6 54 04         [ 1]  142 	ld	a, 0x5404
+      00002E 5F               [ 1]  143 	clrw	x
+      00002F 97               [ 1]  144 	ld	xl, a
+      000030 58               [ 2]  145 	sllw	x
+      000031 58               [ 2]  146 	sllw	x
+      000032 C6 54 05         [ 1]  147 	ld	a, 0x5405
+      000035 4E               [ 1]  148 	swap	a
+      000036 A4 0F            [ 1]  149 	and	a, #0x0f
+      000038 44               [ 1]  150 	srl	a
+      000039 44               [ 1]  151 	srl	a
+      00003A 89               [ 2]  152 	pushw	x
+      00003B 1A 02            [ 1]  153 	or	a, (2, sp)
+      00003D 85               [ 2]  154 	popw	x
+      00003E 97               [ 1]  155 	ld	xl, a
+                                    156 ;	src/main.c: 70: ADC_CSR &= ~ADC_CSR_EOC;
+      00003F 72 1F 54 00      [ 1]  157 	bres	0x5400, #7
+                                    158 ;	src/main.c: 72: return adc_value;
+                                    159 ;	src/main.c: 73: }
+      000043 81               [ 4]  160 	ret
+                                    161 ;	src/main.c: 75: uint16_t analog_read_pd3(void) {
+                                    162 ;	-----------------------------------------
+                                    163 ;	 function analog_read_pd3
+                                    164 ;	-----------------------------------------
+      000044                        165 _analog_read_pd3:
+                                    166 ;	src/main.c: 79: ADC_CSR = ADC_CHANNEL_PD3;
+      000044 35 06 54 00      [ 1]  167 	mov	0x5400+0, #0x06
+                                    168 ;	src/main.c: 82: ADC_CR1 |= ADC_CR1_ADON;
+      000048 72 10 54 01      [ 1]  169 	bset	0x5401, #0
+                                    170 ;	src/main.c: 85: while(!(ADC_CSR & ADC_CSR_EOC));
+      00004C                        171 00101$:
+      00004C C6 54 00         [ 1]  172 	ld	a, 0x5400
+      00004F 2A FB            [ 1]  173 	jrpl	00101$
+                                    174 ;	src/main.c: 88: adc_value = (ADC_DRH << 2) | (ADC_DRL >> 6);
+      000051 C6 54 04         [ 1]  175 	ld	a, 0x5404
+      000054 5F               [ 1]  176 	clrw	x
+      000055 97               [ 1]  177 	ld	xl, a
+      000056 58               [ 2]  178 	sllw	x
+      000057 58               [ 2]  179 	sllw	x
+      000058 C6 54 05         [ 1]  180 	ld	a, 0x5405
+      00005B 4E               [ 1]  181 	swap	a
+      00005C A4 0F            [ 1]  182 	and	a, #0x0f
+      00005E 44               [ 1]  183 	srl	a
+      00005F 44               [ 1]  184 	srl	a
+      000060 89               [ 2]  185 	pushw	x
+      000061 1A 02            [ 1]  186 	or	a, (2, sp)
+      000063 85               [ 2]  187 	popw	x
+      000064 97               [ 1]  188 	ld	xl, a
+                                    189 ;	src/main.c: 91: ADC_CSR &= ~ADC_CSR_EOC;
+      000065 72 1F 54 00      [ 1]  190 	bres	0x5400, #7
+                                    191 ;	src/main.c: 93: return adc_value;
+                                    192 ;	src/main.c: 94: }
+      000069 81               [ 4]  193 	ret
+                                    194 ;	src/main.c: 98: int main(void)
+                                    195 ;	-----------------------------------------
+                                    196 ;	 function main
+                                    197 ;	-----------------------------------------
+      00006A                        198 _main:
+      00006A 52 52            [ 2]  199 	sub	sp, #82
+                                    200 ;	src/main.c: 105: CLK_ECKR |= CLK_ECKR_HSEEN;
+      00006C 72 10 50 C1      [ 1]  201 	bset	0x50c1, #0
+                                    202 ;	src/main.c: 106: while(!(CLK_ECKR & CLK_ECKR_HSERDY));
+      000070                        203 00101$:
+      000070 72 03 50 C1 FB   [ 2]  204 	btjf	0x50c1, #1, 00101$
+                                    205 ;	src/main.c: 107: CLK_SWR = CLK_SWR_HSE;
+      000075 35 B4 50 C4      [ 1]  206 	mov	0x50c4+0, #0xb4
+                                    207 ;	src/main.c: 108: CLK_SWCR |= CLK_SWCR_SWEN;
+      000079 72 12 50 C5      [ 1]  208 	bset	0x50c5, #1
+                                    209 ;	src/main.c: 109: while(CLK_SWCR & CLK_SWCR_SWBSY);
+      00007D                        210 00104$:
+      00007D 72 00 50 C5 FB   [ 2]  211 	btjt	0x50c5, #0, 00104$
+                                    212 ;	src/main.c: 110: CLK_CKDIVR = 0x00;
+      000082 35 00 50 C6      [ 1]  213 	mov	0x50c6+0, #0x00
+                                    214 ;	src/main.c: 113: i2c_init(16000000, I2C_SPEED_STANDARD);
+      000086 4B A0            [ 1]  215 	push	#0xa0
+      000088 4B 86            [ 1]  216 	push	#0x86
+      00008A 4B 01            [ 1]  217 	push	#0x01
+      00008C 4B 00            [ 1]  218 	push	#0x00
+      00008E 4B 00            [ 1]  219 	push	#0x00
+      000090 4B 24            [ 1]  220 	push	#0x24
+      000092 4B F4            [ 1]  221 	push	#0xf4
+      000094 4B 00            [ 1]  222 	push	#0x00
+      000096 CDr00r00         [ 4]  223 	call	_i2c_init
+                                    224 ;	src/main.c: 116: uart_init(9600);
+      000099 4B 80            [ 1]  225 	push	#0x80
+      00009B 4B 25            [ 1]  226 	push	#0x25
+      00009D 5F               [ 1]  227 	clrw	x
+      00009E 89               [ 2]  228 	pushw	x
+      00009F CDr00r00         [ 4]  229 	call	_uart_init
+                                    230 ;	src/main.c: 119: init_adc();
+      0000A2 CDr00r00         [ 4]  231 	call	_init_adc
+                                    232 ;	src/main.c: 122: delay_ms(200);
+      0000A5 AE 00 C8         [ 2]  233 	ldw	x, #0x00c8
+      0000A8 CDr00r00         [ 4]  234 	call	_delay_ms
+                                    235 ;	src/main.c: 123: oled_init();
+      0000AB CDr00r00         [ 4]  236 	call	_oled_init
+                                    237 ;	src/main.c: 124: oled_clear();
+      0000AE CDr00r00         [ 4]  238 	call	_oled_clear
+                                    239 ;	src/main.c: 127: GPIO_Init(LED_PORT, LED_PIN, GPIO_MODE_OUTPUT_PUSH_PULL_LOW, GPIO_SPEED_SLOW);
+      0000B1 4B 00            [ 1]  240 	push	#0x00
+      0000B3 4B 02            [ 1]  241 	push	#0x02
+      0000B5 4B 10            [ 1]  242 	push	#0x10
+      0000B7 A6 03            [ 1]  243 	ld	a, #0x03
+      0000B9 CDr00r00         [ 4]  244 	call	_GPIO_Init
+                                    245 ;	src/main.c: 128: GPIO_Init(RELAY_PORT, RELAY_PIN, GPIO_MODE_OUTPUT_PUSH_PULL_LOW, GPIO_SPEED_SLOW);
+      0000BC 4B 00            [ 1]  246 	push	#0x00
+      0000BE 4B 02            [ 1]  247 	push	#0x02
+      0000C0 4B 08            [ 1]  248 	push	#0x08
+      0000C2 A6 02            [ 1]  249 	ld	a, #0x02
+      0000C4 CDr00r00         [ 4]  250 	call	_GPIO_Init
+                                    251 ;	src/main.c: 129: GPIO_Init(TR_PORT, TR_PIN, GPIO_MODE_OUTPUT_PUSH_PULL_LOW, GPIO_SPEED_SLOW);
+      0000C7 4B 00            [ 1]  252 	push	#0x00
+      0000C9 4B 02            [ 1]  253 	push	#0x02
+      0000CB 4B 08            [ 1]  254 	push	#0x08
+      0000CD 4F               [ 1]  255 	clr	a
+      0000CE CDr00r00         [ 4]  256 	call	_GPIO_Init
+                                    257 ;	src/main.c: 130: GPIO_Init(INPUT1_PORT, INPUT1_PIN, GPIO_MODE_INPUT_PULL_UP, GPIO_SPEED_SLOW);
+      0000D1 4B 00            [ 1]  258 	push	#0x00
+      0000D3 4B 01            [ 1]  259 	push	#0x01
+      0000D5 4B 20            [ 1]  260 	push	#0x20
+      0000D7 A6 02            [ 1]  261 	ld	a, #0x02
+      0000D9 CDr00r00         [ 4]  262 	call	_GPIO_Init
+                                    263 ;	src/main.c: 131: GPIO_Init(INPUT2_PORT, INPUT2_PIN, GPIO_MODE_INPUT_PULL_UP, GPIO_SPEED_SLOW);
+      0000DC 4B 00            [ 1]  264 	push	#0x00
+      0000DE 4B 01            [ 1]  265 	push	#0x01
+      0000E0 4B 40            [ 1]  266 	push	#0x40
+      0000E2 A6 02            [ 1]  267 	ld	a, #0x02
+      0000E4 CDr00r00         [ 4]  268 	call	_GPIO_Init
+                                    269 ;	src/main.c: 134: oled_set_font(FONT_5X7); 
+      0000E7 4F               [ 1]  270 	clr	a
+      0000E8 CDr00r00         [ 4]  271 	call	_oled_set_font
+                                    272 ;	src/main.c: 135: oled_puts_at(0, 0, "System Ready!");
+      0000EB 4Br00            [ 1]  273 	push	#<(___str_0+0)
+      0000ED 4Bs00            [ 1]  274 	push	#((___str_0+0) >> 8)
+      0000EF 4B 00            [ 1]  275 	push	#0x00
+      0000F1 4F               [ 1]  276 	clr	a
+      0000F2 CDr00r00         [ 4]  277 	call	_oled_puts_at
+                                    278 ;	src/main.c: 136: oled_puts_at(0, 8, "STM8S003F3");
+      0000F5 4Br0E            [ 1]  279 	push	#<(___str_1+0)
+      0000F7 4Bs00            [ 1]  280 	push	#((___str_1+0) >> 8)
+      0000F9 4B 08            [ 1]  281 	push	#0x08
+      0000FB 4F               [ 1]  282 	clr	a
+      0000FC CDr00r00         [ 4]  283 	call	_oled_puts_at
+                                    284 ;	src/main.c: 137: oled_puts_at(0, 16, "OLED Display");
+      0000FF 4Br19            [ 1]  285 	push	#<(___str_2+0)
+      000101 4Bs00            [ 1]  286 	push	#((___str_2+0) >> 8)
+      000103 4B 10            [ 1]  287 	push	#0x10
+      000105 4F               [ 1]  288 	clr	a
+      000106 CDr00r00         [ 4]  289 	call	_oled_puts_at
+                                    290 ;	src/main.c: 138: oled_puts_at(0, 24, "_____ADC_____");
+      000109 4Br26            [ 1]  291 	push	#<(___str_3+0)
+      00010B 4Bs00            [ 1]  292 	push	#((___str_3+0) >> 8)
+      00010D 4B 18            [ 1]  293 	push	#0x18
+      00010F 4F               [ 1]  294 	clr	a
+      000110 CDr00r00         [ 4]  295 	call	_oled_puts_at
+                                    296 ;	src/main.c: 141: uart_write("System Ready!\r\n");
+      000113 AEr00r34         [ 2]  297 	ldw	x, #(___str_4+0)
+      000116 CDr00r00         [ 4]  298 	call	_uart_write
+                                    299 ;	src/main.c: 143: while(1) 
+      000119                        300 00115$:
+                                    301 ;	src/main.c: 146: adc_raw_pc4 = analog_read_pc4();
+      000119 CDr00r1E         [ 4]  302 	call	_analog_read_pc4
+      00011C 1F 51            [ 2]  303 	ldw	(0x51, sp), x
+                                    304 ;	src/main.c: 147: adc_raw_pd3 = analog_read_pd3();
+      00011E CDr00r44         [ 4]  305 	call	_analog_read_pd3
+                                    306 ;	src/main.c: 148: sprintf(buffer, "ADC-PC4: %4d | ADC-PD3: %4d \r\n", adc_raw_pc4, adc_raw_pd3);
+      000121 89               [ 2]  307 	pushw	x
+      000122 1E 53            [ 2]  308 	ldw	x, (0x53, sp)
+      000124 89               [ 2]  309 	pushw	x
+      000125 4Br44            [ 1]  310 	push	#<(___str_5+0)
+      000127 4Bs00            [ 1]  311 	push	#((___str_5+0) >> 8)
+      000129 96               [ 1]  312 	ldw	x, sp
+      00012A 1C 00 07         [ 2]  313 	addw	x, #7
+      00012D 89               [ 2]  314 	pushw	x
+      00012E CDr00r00         [ 4]  315 	call	_sprintf
+      000131 5B 08            [ 2]  316 	addw	sp, #8
+                                    317 ;	src/main.c: 149: uart_write(buffer);  
+      000133 96               [ 1]  318 	ldw	x, sp
+      000134 5C               [ 1]  319 	incw	x
+      000135 CDr00r00         [ 4]  320 	call	_uart_write
+                                    321 ;	src/main.c: 152: if((UART1_SR & UART_SR_RXNE))
+      000138 72 0B 52 30 26   [ 2]  322 	btjf	0x5230, #5, 00110$
+                                    323 ;	src/main.c: 154: char received = UART1_DR;
+      00013D C6 52 31         [ 1]  324 	ld	a, 0x5231
+                                    325 ;	src/main.c: 156: if(received == '1') 
+      000140 A1 31            [ 1]  326 	cp	a, #0x31
+      000142 26 1F            [ 1]  327 	jrne	00110$
+                                    328 ;	src/main.c: 158: uart_write("Received: 1\r\n");
+      000144 AEr00r63         [ 2]  329 	ldw	x, #(___str_6+0)
+      000147 CDr00r00         [ 4]  330 	call	_uart_write
+                                    331 ;	src/main.c: 159: uart_write(buffer); 
+      00014A 96               [ 1]  332 	ldw	x, sp
+      00014B 5C               [ 1]  333 	incw	x
+      00014C CDr00r00         [ 4]  334 	call	_uart_write
+                                    335 ;	src/main.c: 162: GPIO_WriteLow(LED_PORT, LED_PIN);
+      00014F 4B 10            [ 1]  336 	push	#0x10
+      000151 A6 03            [ 1]  337 	ld	a, #0x03
+      000153 CDr00r00         [ 4]  338 	call	_GPIO_WriteLow
+                                    339 ;	src/main.c: 163: delay_ms(300);
+      000156 AE 01 2C         [ 2]  340 	ldw	x, #0x012c
+      000159 CDr00r00         [ 4]  341 	call	_delay_ms
+                                    342 ;	src/main.c: 164: GPIO_WriteHigh(LED_PORT, LED_PIN);
+      00015C 4B 10            [ 1]  343 	push	#0x10
+      00015E A6 03            [ 1]  344 	ld	a, #0x03
+      000160 CDr00r00         [ 4]  345 	call	_GPIO_WriteHigh
+      000163                        346 00110$:
+                                    347 ;	src/main.c: 169: if(GPIO_Read(INPUT1_PORT, INPUT1_PIN) == 1) {
+      000163 4B 20            [ 1]  348 	push	#0x20
+      000165 A6 02            [ 1]  349 	ld	a, #0x02
+      000167 CDr00r00         [ 4]  350 	call	_GPIO_Read
+      00016A 4A               [ 1]  351 	dec	a
+      00016B 26 09            [ 1]  352 	jrne	00112$
+                                    353 ;	src/main.c: 170: GPIO_WriteLow(LED_PORT, LED_PIN);
+      00016D 4B 10            [ 1]  354 	push	#0x10
+      00016F A6 03            [ 1]  355 	ld	a, #0x03
+      000171 CDr00r00         [ 4]  356 	call	_GPIO_WriteLow
+      000174 20 07            [ 2]  357 	jra	00113$
+      000176                        358 00112$:
+                                    359 ;	src/main.c: 172: GPIO_WriteHigh(LED_PORT, LED_PIN);
+      000176 4B 10            [ 1]  360 	push	#0x10
+      000178 A6 03            [ 1]  361 	ld	a, #0x03
+      00017A CDr00r00         [ 4]  362 	call	_GPIO_WriteHigh
+      00017D                        363 00113$:
+                                    364 ;	src/main.c: 175: delay_ms(100);
+      00017D AE 00 64         [ 2]  365 	ldw	x, #0x0064
+      000180 CDr00r00         [ 4]  366 	call	_delay_ms
+      000183 20 94            [ 2]  367 	jra	00115$
+                                    368 ;	src/main.c: 177: }
+      000185 5B 52            [ 2]  369 	addw	sp, #82
+      000187 81               [ 4]  370 	ret
+                                    371 	.area CODE
+                                    372 	.area CONST
+                                    373 	.area CONST
+      000000                        374 ___str_0:
+      000000 53 79 73 74 65 6D 20   375 	.ascii "System Ready!"
              52 65 61 64 79 21
-      00000D 00                     254 	.db 0x00
-                                    255 	.area CODE
-                                    256 	.area CONST
-      00000E                        257 ___str_1:
-      00000E 53 54 4D 38 53 30 30   258 	.ascii "STM8S003F3"
+      00000D 00                     376 	.db 0x00
+                                    377 	.area CODE
+                                    378 	.area CONST
+      00000E                        379 ___str_1:
+      00000E 53 54 4D 38 53 30 30   380 	.ascii "STM8S003F3"
              33 46 33
-      000018 00                     259 	.db 0x00
-                                    260 	.area CODE
-                                    261 	.area CONST
-      000019                        262 ___str_2:
-      000019 4F 4C 45 44 20 44 69   263 	.ascii "OLED Display"
+      000018 00                     381 	.db 0x00
+                                    382 	.area CODE
+                                    383 	.area CONST
+      000019                        384 ___str_2:
+      000019 4F 4C 45 44 20 44 69   385 	.ascii "OLED Display"
              73 70 6C 61 79
-      000025 00                     264 	.db 0x00
-                                    265 	.area CODE
-                                    266 	.area CONST
-      000026                        267 ___str_3:
-      000026 49 32 43 20 49 6E 74   268 	.ascii "I2C Interface"
-             65 72 66 61 63 65
-      000033 00                     269 	.db 0x00
-                                    270 	.area CODE
-                                    271 	.area CONST
-      000034                        272 ___str_4:
-      000034 53 79 73 74 65 6D 20   273 	.ascii "System Ready!"
+      000025 00                     386 	.db 0x00
+                                    387 	.area CODE
+                                    388 	.area CONST
+      000026                        389 ___str_3:
+      000026 5F 5F 5F 5F 5F 41 44   390 	.ascii "_____ADC_____"
+             43 5F 5F 5F 5F 5F
+      000033 00                     391 	.db 0x00
+                                    392 	.area CODE
+                                    393 	.area CONST
+      000034                        394 ___str_4:
+      000034 53 79 73 74 65 6D 20   395 	.ascii "System Ready!"
              52 65 61 64 79 21
-      000041 0D                     274 	.db 0x0d
-      000042 0A                     275 	.db 0x0a
-      000043 00                     276 	.db 0x00
-                                    277 	.area CODE
-                                    278 	.area CONST
-      000044                        279 ___str_5:
-      000044 52 65 63 65 69 76 65   280 	.ascii "Received: 1"
+      000041 0D                     396 	.db 0x0d
+      000042 0A                     397 	.db 0x0a
+      000043 00                     398 	.db 0x00
+                                    399 	.area CODE
+                                    400 	.area CONST
+      000044                        401 ___str_5:
+      000044 41 44 43 2D 50 43 34   402 	.ascii "ADC-PC4: %4d | ADC-PD3: %4d "
+             3A 20 25 34 64 20 7C
+             20 41 44 43 2D 50 44
+             33 3A 20 25 34 64 20
+      000060 0D                     403 	.db 0x0d
+      000061 0A                     404 	.db 0x0a
+      000062 00                     405 	.db 0x00
+                                    406 	.area CODE
+                                    407 	.area CONST
+      000063                        408 ___str_6:
+      000063 52 65 63 65 69 76 65   409 	.ascii "Received: 1"
              64 3A 20 31
-      00004F 0D                     281 	.db 0x0d
-      000050 0A                     282 	.db 0x0a
-      000051 00                     283 	.db 0x00
-                                    284 	.area CODE
-                                    285 	.area INITIALIZER
-                                    286 	.area CABS (ABS)
+      00006E 0D                     410 	.db 0x0d
+      00006F 0A                     411 	.db 0x0a
+      000070 00                     412 	.db 0x00
+                                    413 	.area CODE
+                                    414 	.area INITIALIZER
+                                    415 	.area CABS (ABS)

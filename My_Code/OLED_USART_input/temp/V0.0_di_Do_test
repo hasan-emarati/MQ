@@ -1,0 +1,63 @@
+#include <stdint.h>
+#include "stm8.h"
+
+#define LED_PORT_PD    PD
+#define LED_PIN_PD     PIN4
+
+#define RELAY_PORT_PC    PC
+#define RELAY_PIN_PC     PIN3
+
+#define TR_PORT_PA    PA
+#define TR_PIN_PA     PIN3
+
+#define INPUT_PORT_PC6    PC
+#define INPUT_PIN_PC6     PIN6
+
+#define INPUT_PORT_PC5    PC
+#define INPUT_PIN_PC55     PIN5   
+
+
+
+int main(void)
+{
+    /* Switch to external crystal 8MHz */
+    CLK_ECKR |= CLK_ECKR_HSEEN;     // Enable HSE
+    while(!(CLK_ECKR & CLK_ECKR_HSERDY)); // Wait for HSE ready
+    
+    CLK_SWR = CLK_SWR_HSE;          // Select HSE as clock source
+    CLK_SWCR |= CLK_SWCR_SWEN;      // Enable switch
+    while(CLK_SWCR & CLK_SWCR_SWBSY); // Wait for switch complete
+    
+    CLK_CKDIVR = 0x00;              // No divider (8MHz / 1 = 8MHz)
+    
+    /* GPIO setup for PD4 (LED) */
+    PORT(LED_PORT_PD, DDR)  |= LED_PIN_PD;   // Output mode
+    PORT(LED_PORT_PD, CR1)  |= LED_PIN_PD;   // Push-pull
+    PORT(LED_PORT_PD, CR2)  &= ~LED_PIN_PD;  // Slow speed
+    
+    /* GPIO setup for PC3 (RELAY) */
+    PORT(RELAY_PORT_PC, DDR)  |= RELAY_PIN_PC;   // Output mode
+    PORT(RELAY_PORT_PC, CR1)  |= RELAY_PIN_PC;   // Push-pull
+    PORT(RELAY_PORT_PC, CR2)  &= ~RELAY_PIN_PC;  // Slow speed
+    
+    /* GPIO setup for PA3 (TR) */
+    PORT(TR_PORT_PA, DDR)  |= TR_PIN_PA;   // Output mode
+    PORT(TR_PORT_PA, CR1)  |= TR_PIN_PA;   // Push-pull
+    PORT(TR_PORT_PA, CR2)  &= ~TR_PIN_PA;  // Slow speed
+    
+    /* GPIO setup for PC6 as input with pull-up */
+    PORT(INPUT_PORT_PC6, DDR)  &= ~INPUT_PIN_PC6;  // Input mode
+    PORT(INPUT_PORT_PC6, CR1)  |= INPUT_PIN_PC6;   // Enable pull-up
+    PORT(INPUT_PORT_PC6, CR2)  &= ~INPUT_PIN_PC6;  // Disable interrupts
+    
+    /* GPIO setup for PC5 as input with pull-up (as a switch) */
+    PORT(INPUT_PORT_PC5, DDR)  &= ~INPUT_PIN_PC55;  // Input mode
+    PORT(INPUT_PORT_PC5, CR1)  |= INPUT_PIN_PC55;   // Enable pull-up
+    PORT(INPUT_PORT_PC5, CR2)  &= ~INPUT_PIN_PC55;  // Disable interrupts
+
+    while(1) 
+    {
+    
+    }
+}
+

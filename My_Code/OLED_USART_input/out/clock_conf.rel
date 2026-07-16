@@ -1,0 +1,28 @@
+XH3
+H B areas 2 global symbols
+M clock_conf
+S .__.ABS. Def000000
+A _CODE size 0 flags 0 addr 0
+A DATA size 0 flags 0 addr 0
+A INITIALIZED size 0 flags 0 addr 0
+A DABS size 0 flags 8 addr 0
+A HOME size 0 flags 0 addr 0
+A GSINIT size 0 flags 0 addr 0
+A GSFINAL size 0 flags 0 addr 0
+A CONST size 0 flags 0 addr 0
+A INITIALIZER size 0 flags 0 addr 0
+A CODE size 1B flags 0 addr 0
+S _clock_init Def000000
+A CABS size 0 flags 8 addr 0
+T 00 00 00
+R 00 00 00 09
+T 00 00 00 72 10 50 C1
+R 00 00 00 09
+T 00 00 04
+R 00 00 00 09
+T 00 00 04 72 03 50 C1 FB 35 B4 50 C4 72 12 50 C5
+R 00 00 00 09
+T 00 00 11
+R 00 00 00 09
+T 00 00 11 72 00 50 C5 FB 35 00 50 C6 81
+R 00 00 00 09
