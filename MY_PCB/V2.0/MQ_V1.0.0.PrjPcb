@@ -67,7 +67,7 @@ GenerateClassCluster=0
 DocumentUniqueId=LZIGJEVB
 
 [Document2]
-DocumentPath=MQ9_MQ2_LM35_PT100_IOT.SchDoc
+DocumentPath=Sensor.SchDoc
 AnnotationEnabled=1
 AnnotateStartValue=1
 AnnotationIndexControlEnabled=0
